@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { Layers } from 'lucide-react';
-import logo from './assets/logo.jpg';
 import UploadZone from './components/UploadZone.jsx';
 import CourseSelector from './components/CourseSelector.jsx';
 import PreferencePanel from './components/PreferencePanel.jsx';
@@ -141,9 +140,9 @@ function App() {
         <div className="absolute top-[-10%] left-[-10%] w-[500px] h-[500px] bg-indigo-900/20 rounded-full blur-[120px] pointer-events-none"></div>
         <div className="absolute bottom-[-10%] right-[-10%] w-[500px] h-[500px] bg-violet-900/20 rounded-full blur-[120px] pointer-events-none"></div>
 
-        <div className="text-center mb-12 animate-slide-up relative z-10 flex flex-col items-center">
-          <div className="p-4 bg-gray-900/50 backdrop-blur-xl border border-indigo-500/30 rounded-3xl shadow-[0_0_30px_rgba(99,102,241,0.3)] mb-8 animate-pulse-glow">
-            <img src={logo} alt="PlanWiz Logo" className="w-24 h-24 object-contain" />
+        <div className="text-center mb-12 animate-slide-up relative z-10">
+          <div className="inline-flex p-4 bg-gray-900/50 backdrop-blur-xl border border-indigo-500/30 rounded-2xl shadow-[0_0_30px_rgba(99,102,241,0.3)] mb-8 animate-pulse-glow">
+            <Layers className="w-12 h-12 text-indigo-400" />
           </div>
           <h1 className="text-5xl font-extrabold tracking-tight text-white mb-4 drop-shadow-lg">
             Plan<span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-violet-400">Wiz</span>
@@ -173,8 +172,8 @@ function App() {
         <div className="absolute inset-0 bg-black/60 backdrop-blur-xl border-b border-gray-800"></div>
         <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between relative z-10">
           <div className="flex items-center gap-3 cursor-pointer group" onClick={() => window.location.reload()}>
-            <div className="w-10 h-10 bg-white/5 rounded-lg border border-white/10 flex items-center justify-center overflow-hidden">
-              <img src={logo} alt="PW" className="w-8 h-8 object-contain" />
+            <div className="p-2 bg-indigo-600/20 border border-indigo-500/30 rounded-lg shadow-lg group-hover:bg-indigo-600/40 transition-all">
+              <Layers className="w-5 h-5 text-indigo-400 group-hover:text-indigo-300" />
             </div>
             <div>
               <h1 className="text-lg font-extrabold tracking-tight text-white group-hover:text-indigo-200 transition-colors">PlanWiz</h1>
@@ -196,6 +195,7 @@ function App() {
         {/* SECTION 1: Timetable & Feedback (TOP) */}
         <section className="space-y-6">
           <div className="glass-panel rounded-2xl shadow-2xl min-h-[400px] p-2 relative overflow-hidden group">
+
             {/* Status/Loading Overlay */}
             {status === 'loading' && (
               <div className="absolute inset-0 z-50 bg-black/60 backdrop-blur-md flex flex-col items-center justify-center">
@@ -204,7 +204,7 @@ function App() {
               </div>
             )}
 
-            {/* Conflict Banner */}
+            {/* Conflict Banner (Generic) */}
             {status === 'conflict' && (
               <div className="bg-red-900/20 border-b border-red-500/20 p-4 text-center">
                 <p className="text-red-400 font-bold flex items-center justify-center gap-2">
@@ -223,10 +223,10 @@ function App() {
 
             {/* Empty State Instructions */}
             {!generatedTimetable && status !== 'loading' && status !== 'conflict' && status !== 'error' && (
-              <div className="py-32 text-center flex flex-col items-center justify-center">
-                <div className="w-20 h-20 bg-gray-800/30 rounded-full flex items-center justify-center mb-6 border border-gray-700">
-                  <img src={logo} alt="Logo" className="w-10 h-10 opacity-40 grayscale" />
-                </div>
+              <div className="py-32 text-center">
+                <span className="inline-block p-4 rounded-full bg-gray-800/50 mb-4 text-gray-600">
+                  <Layers className="w-8 h-8 opacity-50" />
+                </span>
                 <p className="text-gray-500 font-medium text-lg">Select subjects below to begin.</p>
                 <p className="text-gray-600 text-sm mt-2">Your optimized schedule will appear here.</p>
               </div>
@@ -266,10 +266,11 @@ function App() {
             )}
           </div>
 
-          {/* Conflict Box */}
+          {/* CONFLICT FEEDBACK (BELOW TIMETABLE) */}
           {status === 'conflict' && conflictDetails && (
             <div className="animate-slide-up bg-gray-900/40 backdrop-blur-sm rounded-xl border-l-4 border-red-500 border-y border-r border-gray-800 shadow-xl p-6 relative overflow-hidden">
               <div className="absolute top-0 right-0 w-32 h-32 bg-red-500/5 rounded-full blur-[50px] pointer-events-none"></div>
+
               <h3 className="text-red-400 font-bold text-lg mb-4 flex items-center relative z-10">
                 <span className="text-2xl mr-3 filter drop-shadow-[0_0_5px_rgba(239,68,68,0.5)]">⚠️</span> Conflict Analysis
               </h3>
@@ -337,24 +338,6 @@ function App() {
                 onGenerate={handleGenerate}
               />
             </div>
-          </div>
-        </section>
-
-        {/* NEW SECTION 3: Dashboard Info (Extra Content) */}
-        <section className="grid md:grid-cols-3 gap-6">
-          <div className="glass-panel p-5 rounded-xl border-l-4 border-l-indigo-500">
-            <h3 className="text-indigo-400 font-bold mb-2">🚀 Pro Tip</h3>
-            <p className="text-sm text-gray-400">Selecting a <strong>Leave Day</strong> early helps filter out incompatible courses instantly.</p>
-          </div>
-          <div className="glass-panel p-5 rounded-xl border-l-4 border-l-violet-500">
-            <h3 className="text-violet-400 font-bold mb-2">👻 Ghost Mode</h3>
-            <p className="text-sm text-gray-400">Click subject buttons above the timetable to see <strong>all possible slots</strong> for that course.</p>
-          </div>
-          <div className="glass-panel p-5 rounded-xl border-l-4 border-l-pink-500">
-            <h3 className="text-pink-400 font-bold mb-2">⚡ Status</h3>
-            <p className="text-sm text-gray-400">
-              System: <span className="text-green-400">Online</span> • Solver: <span className="text-green-400">Ready</span>
-            </p>
           </div>
         </section>
 

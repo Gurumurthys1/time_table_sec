@@ -289,12 +289,12 @@ class TimetableCSP:
             # Flatten the list of segments into the output
             for seg in segments:
                 output.append({
-                    "subject": subject,
+                    "course_name": seg.get('course_name', subject),
+                    "course_code": seg.get('course_code', ''),
                     "faculty": seg['faculty'],
                     "day": seg['day'],
-                    "start_time": seg['start_time'],
-                    "end_time": seg['end_time'],
-                    "slot": seg['slot']
+                    "time": f"{seg['start_time']} - {seg['end_time']}",
+                    "venue": seg['slot'] # Mapping slot to venue for display
                 })
         return output
         

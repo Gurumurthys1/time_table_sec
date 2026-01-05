@@ -1,45 +1,54 @@
 import React from 'react';
-import { Calendar, Play } from 'lucide-react';
+import { Calendar, Wand2 } from 'lucide-react';
 
 const PreferencePanel = ({ leaveDay, setLeaveDay, onGenerate }) => {
     const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"];
 
     return (
-        <div className="h-full flex flex-col">
-            {/* Leave Day Card */}
-            <div className="bg-gray-900/50 rounded-xl p-5 border border-gray-800 mb-6">
-                <label className="text-sm font-semibold text-gray-400 uppercase tracking-wide flex items-center mb-3">
-                    <Calendar className="w-4 h-4 mr-2 text-violet-400" /> Preferred Leave Day
+        <div className="space-y-8 animate-fade-in delay-100">
+
+            {/* Leave Day Preference */}
+            <div className="bg-gray-800/40 p-5 rounded-xl border border-gray-800 hover:border-violet-500/30 transition-colors">
+                <label className="text-xs font-bold text-gray-400 uppercase tracking-widest flex items-center mb-3">
+                    <Calendar className="w-4 h-4 mr-2 text-violet-400" />
+                    Leave Day Preference
                 </label>
+
                 <div className="relative">
                     <select
-                        className="w-full appearance-none p-3 pl-4 bg-black/40 border border-gray-700 rounded-lg text-gray-200 focus:outline-none focus:ring-2 focus:ring-violet-500 transition-shadow cursor-pointer hover:border-gray-600"
+                        className="w-full p-3 pl-4 text-sm text-gray-200 border border-gray-700 rounded-lg bg-gray-900 focus:outline-none focus:border-violet-500 focus:ring-1 focus:ring-violet-500/50 appearance-none transition-all shadow-am"
                         value={leaveDay}
                         onChange={(e) => setLeaveDay(e.target.value)}
                     >
-                        <option value="" className="bg-gray-900">No Preference (Any Day)</option>
-                        {days.map(d => (
-                            <option key={d} value={d} className="bg-gray-900">{d}</option>
+                        <option value="" className="bg-gray-900">None (Maximize Study)</option>
+                        {days.map(day => (
+                            <option key={day} value={day} className="bg-gray-900">{day}</option>
                         ))}
                     </select>
-                    <div className="absolute right-3 top-3.5 pointer-events-none">
-                        <svg className="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path></svg>
+                    <div className="absolute inset-y-0 right-0 flex items-center px-4 pointer-events-none text-gray-500">
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path></svg>
                     </div>
                 </div>
-                <p className="text-xs text-gray-600 mt-2">
-                    * We'll try to keep this day free. Minimum classes otherwise.
+
+                <p className="text-xs text-gray-500 mt-2 pl-1">
+                    {leaveDay ? `PlanWiz will attempt to keep ${leaveDay}s free.` : "No specific day off requested."}
                 </p>
             </div>
 
             {/* Generate Button */}
-            <button
-                onClick={onGenerate}
-                className="group w-full py-4 bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white rounded-xl font-bold text-lg shadow-[0_0_20px_rgba(99,102,241,0.4)] hover:shadow-[0_0_30px_rgba(99,102,241,0.6)] transform hover:scale-[1.02] transition-all duration-300 flex items-center justify-center relative overflow-hidden"
-            >
-                <span className="absolute inset-0 w-full h-full bg-white/20 group-hover:translate-x-full transition-transform duration-700 ease-in-out -translate-x-full -skew-x-12"></span>
-                <Play className="w-5 h-5 mr-2 fill-current" />
-                GENERATE SCHEDULE
-            </button>
+            <div className="pt-2">
+                <button
+                    onClick={onGenerate}
+                    className="w-full py-4 px-6 bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white font-bold rounded-xl shadow-[0_0_20px_rgba(99,102,241,0.4)] hover:shadow-[0_0_30px_rgba(139,92,246,0.6)] transform hover:-translate-y-1 transition-all duration-300 flex items-center justify-center group"
+                >
+                    <Wand2 className="w-5 h-5 mr-2 animate-pulse group-hover:rotate-12 transition-transform" />
+                    Generate My Timetable
+                </button>
+                <p className="text-center text-[10px] text-gray-500 mt-3 uppercase tracking-wider font-semibold">
+                    AI-Powered Optimization
+                </p>
+            </div>
+
         </div>
     );
 };
