@@ -74,10 +74,6 @@ function App() {
       if (prev.includes(subject)) {
         return prev.filter(s => s !== subject);
       }
-      if (prev.length >= 7) {
-        alert("You can select a maximum of 7 subjects.");
-        return prev;
-      }
       return [...prev, subject];
     });
   };

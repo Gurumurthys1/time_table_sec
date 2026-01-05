@@ -24,8 +24,32 @@ const CourseSelector = ({ courses, selectedSubjects, compatibleSubjects, onToggl
         setStructure(subjs);
     }, [courses]);
 
+    // Calculate Totals
+    const totalCredits = selectedSubjects.reduce((acc, subj) => {
+        const creds = structure[subj] ? parseInt(structure[subj].credits, 10) : 0;
+        return acc + creds;
+    }, 0);
+
     return (
         <div className="w-full">
+            {/* Summary Bar */}
+            <div className="flex items-center justify-between bg-gray-900/80 border border-gray-800 rounded-xl p-4 mb-4 backdrop-blur-sm sticky top-0 z-20 shadow-lg">
+                <div className="flex items-center gap-4">
+                    <div className="text-gray-400 text-sm font-medium">
+                        Selected: <span className="text-white font-bold">{selectedSubjects.length}</span>
+                    </div>
+                    <div className="h-4 w-px bg-gray-700"></div>
+                    <div className="text-gray-400 text-sm font-medium">
+                        Credits: <span className="text-indigo-400 font-bold">{totalCredits}</span>
+                    </div>
+                </div>
+                {selectedSubjects.length > 0 && (
+                    <span className="text-[10px] text-gray-500 uppercase tracking-widest font-semibold">
+                        {selectedSubjects.length} Selected
+                    </span>
+                )}
+            </div>
+
             <div className="grid gap-4 md:grid-cols-2">
                 {uniqueSubjects.map(subject => {
                     const isSelected = selectedSubjects.includes(subject);
@@ -44,10 +68,10 @@ const CourseSelector = ({ courses, selectedSubjects, compatibleSubjects, onToggl
                         <div
                             key={subject}
                             className={`p-4 rounded-xl border transition-all duration-300 relative group overflow-hidden ${isSelected
-                                    ? 'border-indigo-500 bg-indigo-900/10 shadow-[0_0_15px_rgba(99,102,241,0.1)]'
-                                    : isDisabled
-                                        ? 'border-gray-800 bg-gray-900/30 opacity-40 grayscale'
-                                        : 'border-gray-800 bg-gray-900/50 hover:border-gray-600 hover:bg-gray-800/80'
+                                ? 'border-indigo-500 bg-indigo-900/10 shadow-[0_0_15px_rgba(99,102,241,0.1)]'
+                                : isDisabled
+                                    ? 'border-gray-800 bg-gray-900/30 opacity-40 grayscale'
+                                    : 'border-gray-800 bg-gray-900/50 hover:border-gray-600 hover:bg-gray-800/80'
                                 }`}
                         >
                             {/* Glowing effect for selected */}
@@ -78,10 +102,10 @@ const CourseSelector = ({ courses, selectedSubjects, compatibleSubjects, onToggl
                                         className="sr-only peer"
                                     />
                                     <div className={`w-6 h-6 rounded-lg border-2 flex items-center justify-center transition-all ${isSelected
-                                            ? 'bg-indigo-600 border-indigo-600'
-                                            : isDisabled
-                                                ? 'border-gray-700 bg-gray-800'
-                                                : 'border-gray-600 bg-transparent group-hover:border-gray-400'
+                                        ? 'bg-indigo-600 border-indigo-600'
+                                        : isDisabled
+                                            ? 'border-gray-700 bg-gray-800'
+                                            : 'border-gray-600 bg-transparent group-hover:border-gray-400'
                                         }`}>
                                         {isSelected && <Check className="w-4 h-4 text-white" />}
                                     </div>

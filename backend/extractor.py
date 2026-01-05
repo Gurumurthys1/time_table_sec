@@ -128,8 +128,12 @@ def parse_pdf_text(text):
     return rows
 
 def merge_slots(rows):
-    grouped = defaultdict(list)
-
+    """
+    Converts raw rows to the tuple format expected by format_output,
+    without merging contiguous time slots. This ensures the frontend
+    receives granular 1-hour slots for its grid.
+    """
+    final = []
     for r in rows:
         key = (
             r["Course Name"],
@@ -139,24 +143,8 @@ def merge_slots(rows):
             r["Slot Name"],
             r["Day"]
         )
-        grouped[key].append((to_minutes(r["Start"]), to_minutes(r["End"])))
-
-    final = []
-
-    for key, times in grouped.items():
-        times.sort()
-        if not times:
-            continue
-            
-        start, end = times[0]
-
-        for s, e in times[1:]:
-            if s == end:
-                end = e
-            else:
-                final.append((*key, start, end))
-                start, end = s, e
-
+        start = to_minutes(r["Start"])
+        end = to_minutes(r["End"])
         final.append((*key, start, end))
 
     return final
