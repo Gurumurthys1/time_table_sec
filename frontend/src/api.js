@@ -20,4 +20,9 @@ export const generateTimetable = async (preferences) => {
     return response.data;
 };
 
+export const checkCompatibility = async (preferences) => {
+    const response = await api.post('/check-compatibility', preferences);
+    return response.data;
+};
+
 export default api;

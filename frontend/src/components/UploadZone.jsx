@@ -1,98 +1,84 @@
 import React, { useCallback, useState } from 'react';
-import { Upload, FileText, CheckCircle, AlertCircle } from 'lucide-react';
+import { useDropzone } from 'react-dropzone';
+import { UploadCloud, AlertCircle, Loader2 } from 'lucide-react';
 import { uploadPDF } from '../api';
 
 const UploadZone = ({ onUploadSuccess }) => {
-    const [isDragging, setIsDragging] = useState(false);
-    const [isUploading, setIsUploading] = useState(false);
+    const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
 
-    const handleDrag = useCallback((e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        if (e.type === 'dragenter' || e.type === 'dragover') {
-            setIsDragging(true);
-        } else if (e.type === 'dragleave') {
-            setIsDragging(false);
-        }
-    }, []);
+    const onDrop = useCallback(async (acceptedFiles) => {
+        const file = acceptedFiles[0];
+        if (!file) return;
 
-    const processFile = async (file) => {
-        if (file.type !== 'application/pdf') {
-            setError('Please upload a PDF file.');
-            return;
-        }
-
-        setIsUploading(true);
+        setLoading(true);
         setError(null);
 
         try {
             const data = await uploadPDF(file);
-            onUploadSuccess(data.courses);
+            // Simulate a small delay for better UX feel of "processing"
+            setTimeout(() => {
+                onUploadSuccess(data.courses);
+                setLoading(false);
+            }, 800);
         } catch (err) {
-            setError('Failed to process PDF. Please try again.');
             console.error(err);
-        } finally {
-            setIsUploading(false);
+            setError("Failed to process file. Ensure it's a valid PDF.");
+            setLoading(false);
         }
-    };
+    }, [onUploadSuccess]);
 
-    const handleDrop = useCallback((e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        setIsDragging(false);
-
-        if (e.dataTransfer.files && e.dataTransfer.files[0]) {
-            processFile(e.dataTransfer.files[0]);
-        }
-    }, []);
-
-    const handleChange = (e) => {
-        if (e.target.files && e.target.files[0]) {
-            processFile(e.target.files[0]);
-        }
-    };
+    const { getRootProps, getInputProps, isDragActive } = useDropzone({
+        onDrop,
+        accept: { 'application/pdf': ['.pdf'] },
+        multiple: false
+    });
 
     return (
-        <div className="w-full max-w-2xl mx-auto mb-8">
+        <div className="w-full">
             <div
-                onDragEnter={handleDrag}
-                onDragLeave={handleDrag}
-                onDragOver={handleDrag}
-                onDrop={handleDrop}
-                className={`relative flex flex-col items-center justify-center p-10 border-2 border-dashed rounded-xl transition-all duration-300 ${isDragging
-                        ? 'border-indigo-500 bg-indigo-50'
-                        : 'border-gray-300 bg-white hover:border-gray-400'
-                    }`}
+                {...getRootProps()}
+                className={`
+          relative border-2 border-dashed rounded-3xl p-12 text-center cursor-pointer transition-all duration-300 group
+          ${isDragActive
+                        ? 'border-indigo-400 bg-indigo-900/20 scale-[1.02]'
+                        : 'border-gray-800 bg-gray-900/40 hover:border-gray-600 hover:bg-gray-900/60'
+                    }
+        `}
             >
-                <input
-                    type="file"
-                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                    onChange={handleChange}
-                    accept=".pdf"
-                    disabled={isUploading}
-                />
+                <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/5 to-purple-500/5 rounded-3xl pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity"></div>
 
-                {isUploading ? (
-                    <div className="flex flex-col items-center animate-pulse">
-                        <FileText className="w-12 h-12 text-indigo-500 mb-3" />
-                        <p className="text-gray-600 font-medium">Processing enrollment PDF...</p>
-                    </div>
-                ) : (
-                    <div className="flex flex-col items-center text-center">
-                        <Upload className={`w-12 h-12 mb-3 ${isDragging ? 'text-indigo-600' : 'text-gray-400'}`} />
-                        <p className="text-lg font-semibold text-gray-700">
-                            {isDragging ? 'Drop it here!' : 'Drag & Drop Enrollment PDF'}
-                        </p>
-                        <p className="text-sm text-gray-500 mt-1">or click to browse</p>
-                    </div>
-                )}
+                <input {...getInputProps()} />
+
+                <div className="relative z-10 flex flex-col items-center justify-center space-y-4">
+                    {loading ? (
+                        <div className="animate-pulse">
+                            <Loader2 className="w-16 h-16 text-indigo-400 animate-spin mb-4" />
+                            <p className="text-indigo-300 font-medium">Analyzing document structure...</p>
+                        </div>
+                    ) : (
+                        <>
+                            <div className={`p-5 rounded-full mb-2 transition-transform duration-500 ${isDragActive ? 'scale-110 bg-indigo-500/20' : 'bg-gray-800 group-hover:bg-indigo-900/30'}`}>
+                                <UploadCloud className={`w-10 h-10 ${isDragActive ? 'text-indigo-300' : 'text-gray-400 group-hover:text-indigo-400'}`} />
+                            </div>
+
+                            <div>
+                                <p className="text-xl font-bold text-gray-200 mb-2">
+                                    {isDragActive ? "Drop PDF file here" : "Click to upload or drag & drop"}
+                                </p>
+                                <p className="text-sm text-gray-500">Supported Format: PDF (Max 10MB)</p>
+                            </div>
+                        </>
+                    )}
+                </div>
             </div>
 
             {error && (
-                <div className="flex items-center p-4 bg-red-50 text-red-700 rounded-lg">
-                    <AlertCircle className="w-5 h-5 mr-2" />
-                    {error}
+                <div className="mt-4 p-4 bg-red-900/20 border border-red-500/20 rounded-xl flex items-center gap-3 animate-slide-up">
+                    <div className="bg-red-500/10 p-2 rounded-full">
+                        <AlertCircle className="w-5 h-5 text-red-400" />
+                    </div>
+                    <p className="text-red-400 text-sm font-medium">{error}</p>
                 </div>
             )}
         </div>

@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Layers } from 'lucide-react';
+import logo from './assets/logo.jpg';
 import UploadZone from './components/UploadZone.jsx';
 import CourseSelector from './components/CourseSelector.jsx';
 import PreferencePanel from './components/PreferencePanel.jsx';
 import TimetableView from './components/TimetableView.jsx';
-import { generateTimetable } from './api';
+import { generateTimetable, checkCompatibility } from './api';
 
 function App() {
   const [courses, setCourses] = useState(null);
@@ -14,20 +15,72 @@ function App() {
   const [generatedTimetable, setGeneratedTimetable] = useState(null);
   const [status, setStatus] = useState(null); // 'loading', 'error', 'success', 'conflict'
   const [statusMessage, setStatusMessage] = useState("");
+  const [suggestion, setSuggestion] = useState("");
+  const [conflictDetails, setConflictDetails] = useState(null);
+  const [ghostData, setGhostData] = useState(null);
+  const [activeGhostSubjects, setActiveGhostSubjects] = useState([]);
+
+  // Intelligence: Active list of subjects that fit with current selection
+  const [compatibleSubjects, setCompatibleSubjects] = useState(null);
+
+  // Debounced Compatibility Check
+  useEffect(() => {
+    // If no course data, reset
+    if (!courses) {
+      setCompatibleSubjects(null);
+      return;
+    }
+
+    // Auto-check availability based on current Selection + Preferences
+    const timer = setTimeout(async () => {
+      try {
+        const data = await checkCompatibility({
+          selected_subjects: selectedSubjects,
+          courses_data: courses,
+          leave_day: leaveDay,
+          preferred_faculties: preferredFaculties
+        });
+        setCompatibleSubjects(data.compatible_subjects);
+      } catch (e) {
+        console.error("Auto-check failed", e);
+      }
+    }, 500);
+
+    return () => clearTimeout(timer);
+  }, [selectedSubjects, leaveDay, preferredFaculties, courses]);
+
+  const handleGhostClick = (subject) => {
+    setActiveGhostSubjects(prev => {
+      if (prev.includes(subject)) {
+        return prev.filter(s => s !== subject);
+      }
+      return [...prev, subject];
+    });
+  };
 
   const handleUploadSuccess = (data) => {
     setCourses(data);
     setSelectedSubjects([]);
     setGeneratedTimetable(null);
+    setGhostData(null);
+    setConflictDetails(null);
+    setActiveGhostSubjects([]);
     setStatus(null);
+    setSuggestion("");
+    setCompatibleSubjects(null);
   };
 
   const handleToggleSubject = (subject) => {
-    setSelectedSubjects(prev =>
-      prev.includes(subject)
-        ? prev.filter(s => s !== subject)
-        : [...prev, subject]
-    );
+    setSelectedSubjects(prev => {
+      if (prev.includes(subject)) {
+        return prev.filter(s => s !== subject);
+      }
+      if (prev.length >= 7) {
+        alert("You can select a maximum of 7 subjects.");
+        return prev;
+      }
+      return [...prev, subject];
+    });
   };
 
   const handleSetPreference = (subject, faculty) => {
@@ -45,11 +98,13 @@ function App() {
 
     setStatus('loading');
     setGeneratedTimetable(null);
+    setSuggestion("");
+    setConflictDetails(null);
 
     try {
       const result = await generateTimetable({
         selected_subjects: selectedSubjects,
-        courses_data: courses, // Send full data back or relevant parts
+        courses_data: courses,
         leave_day: leaveDay,
         preferred_faculties: preferredFaculties
       });
@@ -57,9 +112,16 @@ function App() {
       if (result.status === 'success') {
         setGeneratedTimetable(result.timetable);
         setStatus('success');
+      } else if (result.status === 'success_with_adjustment') {
+        setGeneratedTimetable(result.timetable);
+        setStatus('success_with_adjustment');
+        setStatusMessage(result.message);
       } else if (result.status === 'conflict') {
         setStatus('conflict');
         setStatusMessage(result.reason);
+        setConflictDetails(result.conflict_details);
+        setSuggestion(result.suggestion || "Try changing your leave day or faculty preferences.");
+        setGhostData(result.all_possible_slots || {}); // Even on conflict show ghosts
       } else {
         setStatus('error');
         setStatusMessage(result.reason || "Unknown error");
@@ -71,94 +133,232 @@ function App() {
     }
   };
 
-  // Render Logic
+  // View 1: Upload Page (Landing)
+  if (!courses) {
+    return (
+      <div className="min-h-screen bg-black bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-gray-900 via-black to-black flex flex-col justify-center items-center font-sans text-gray-100 p-6 relative overflow-hidden">
+        {/* Ambient Background Glow */}
+        <div className="absolute top-[-10%] left-[-10%] w-[500px] h-[500px] bg-indigo-900/20 rounded-full blur-[120px] pointer-events-none"></div>
+        <div className="absolute bottom-[-10%] right-[-10%] w-[500px] h-[500px] bg-violet-900/20 rounded-full blur-[120px] pointer-events-none"></div>
+
+        <div className="text-center mb-12 animate-slide-up relative z-10 flex flex-col items-center">
+          <div className="p-4 bg-gray-900/50 backdrop-blur-xl border border-indigo-500/30 rounded-3xl shadow-[0_0_30px_rgba(99,102,241,0.3)] mb-8 animate-pulse-glow">
+            <img src={logo} alt="PlanWiz Logo" className="w-24 h-24 object-contain" />
+          </div>
+          <h1 className="text-5xl font-extrabold tracking-tight text-white mb-4 drop-shadow-lg">
+            Plan<span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-violet-400">Wiz</span>
+          </h1>
+          <p className="text-xl text-gray-400 font-medium max-w-md mx-auto leading-relaxed">
+            Upload your enrollment PDF to generate an AI-optimized student timetable in seconds.
+          </p>
+        </div>
+
+        <div className="w-full max-w-2xl animate-fade-in delay-100 relative z-10">
+          <UploadZone onUploadSuccess={handleUploadSuccess} />
+        </div>
+
+        <footer className="mt-20 text-gray-600 text-sm">
+          © 2026 PlanWiz. Intelligent Scheduling.
+        </footer>
+      </div>
+    );
+  }
+
+  // View 2: Dashboard (Top-Bottom Layout)
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col font-sans text-gray-900">
+    <div className="min-h-screen bg-black bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-gray-900 via-black to-black flex flex-col font-sans text-gray-100">
+
       {/* Header */}
-      <header className="bg-white border-b border-gray-200 px-6 py-4 sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="p-2 bg-indigo-600 rounded-lg shadow-lg">
-              <Layers className="w-6 h-6 text-white" />
+      <header className="sticky top-0 z-50 transition-all duration-300">
+        <div className="absolute inset-0 bg-black/60 backdrop-blur-xl border-b border-gray-800"></div>
+        <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between relative z-10">
+          <div className="flex items-center gap-3 cursor-pointer group" onClick={() => window.location.reload()}>
+            <div className="w-10 h-10 bg-white/5 rounded-lg border border-white/10 flex items-center justify-center overflow-hidden">
+              <img src={logo} alt="PW" className="w-8 h-8 object-contain" />
             </div>
             <div>
-              <h1 className="text-xl font-extrabold tracking-tight text-gray-900">PlanWiz</h1>
-              <p className="text-xs text-gray-500 font-medium">Intelligent Timetable Generator</p>
+              <h1 className="text-lg font-extrabold tracking-tight text-white group-hover:text-indigo-200 transition-colors">PlanWiz</h1>
+              <p className="text-xs text-gray-500 font-medium tracking-wider">DASHBOARD</p>
             </div>
           </div>
+          <button
+            onClick={() => window.location.reload()}
+            className="px-4 py-2 text-sm font-medium text-gray-400 hover:text-white hover:bg-white/5 rounded-lg transition-all"
+          >
+            Reset Session
+          </button>
         </div>
       </header>
 
-      {/* Main Content */}
-      <main className="flex-1 w-full max-w-7xl mx-auto p-6 md:p-12">
+      {/* Dashboard Content - Vertical Stack */}
+      <main className="flex-1 w-full max-w-6xl mx-auto p-4 md:p-8 space-y-12 animate-fade-in">
 
-        {/* Step 1: Upload */}
-        <section className="animate-fade-in-up">
-          <div className="text-center mb-8">
-            <h2 className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 to-purple-600">
-              Transform Your Schedule
-            </h2>
-            <p className="text-gray-600 mt-2 text-lg">
-              Upload your enrollment PDF to get started with AI-powered personalized timetabling.
-            </p>
-          </div>
+        {/* SECTION 1: Timetable & Feedback (TOP) */}
+        <section className="space-y-6">
+          <div className="glass-panel rounded-2xl shadow-2xl min-h-[400px] p-2 relative overflow-hidden group">
+            {/* Status/Loading Overlay */}
+            {status === 'loading' && (
+              <div className="absolute inset-0 z-50 bg-black/60 backdrop-blur-md flex flex-col items-center justify-center">
+                <div className="w-16 h-16 border-4 border-indigo-900 border-t-indigo-500 rounded-full animate-spin mb-6 shadow-[0_0_20px_rgba(99,102,241,0.5)]"></div>
+                <p className="text-indigo-300 font-medium tracking-wide animate-pulse">OPTIMIZING SCHEDULE...</p>
+              </div>
+            )}
 
-          <UploadZone onUploadSuccess={handleUploadSuccess} />
-        </section>
-
-        {/* Step 2: Selection */}
-        {courses && (
-          <section className="mt-12 animate-fade-in-up delay-100">
-            <CourseSelector
-              courses={courses}
-              selectedSubjects={selectedSubjects}
-              onToggleSubject={handleToggleSubject}
-              preferredFaculties={preferredFaculties}
-              onSetPreference={handleSetPreference}
-            />
-
-            <PreferencePanel
-              leaveDay={leaveDay}
-              setLeaveDay={setLeaveDay}
-              onGenerate={handleGenerate}
-            />
-          </section>
-        )}
-
-        {/* Loading State */}
-        {status === 'loading' && (
-          <div className="mt-12 flex flex-col items-center justify-center py-12">
-            <div className="w-16 h-16 border-4 border-indigo-200 border-t-indigo-600 rounded-full animate-spin"></div>
-            <p className="mt-4 text-lg font-medium text-gray-600">Solving constraints...</p>
-          </div>
-        )}
-
-        {/* Error/Conflict State */}
-        {(status === 'conflict' || status === 'error') && (
-          <div className="mt-8 p-6 bg-red-50 border border-red-200 rounded-xl text-center max-w-2xl mx-auto">
-            <h3 className="text-lg font-bold text-red-700 mb-1">
-              {status === 'conflict' ? 'Schedule Conflict' : 'Error'}
-            </h3>
-            <p className="text-red-600">{statusMessage}</p>
+            {/* Conflict Banner */}
             {status === 'conflict' && (
-              <p className="text-sm text-red-500 mt-2">Try changing your leave day or faculty preferences.</p>
+              <div className="bg-red-900/20 border-b border-red-500/20 p-4 text-center">
+                <p className="text-red-400 font-bold flex items-center justify-center gap-2">
+                  <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse shadow-[0_0_10px_red]"></span>
+                  Scheduling Conflict Detected
+                </p>
+              </div>
+            )}
+
+            {/* Note Banner */}
+            {status === 'success_with_adjustment' && (
+              <div className="bg-yellow-900/20 border-b border-yellow-500/20 p-3 text-center text-sm text-yellow-500">
+                <strong>Note:</strong> {statusMessage}
+              </div>
+            )}
+
+            {/* Empty State Instructions */}
+            {!generatedTimetable && status !== 'loading' && status !== 'conflict' && status !== 'error' && (
+              <div className="py-32 text-center flex flex-col items-center justify-center">
+                <div className="w-20 h-20 bg-gray-800/30 rounded-full flex items-center justify-center mb-6 border border-gray-700">
+                  <img src={logo} alt="Logo" className="w-10 h-10 opacity-40 grayscale" />
+                </div>
+                <p className="text-gray-500 font-medium text-lg">Select subjects below to begin.</p>
+                <p className="text-gray-600 text-sm mt-2">Your optimized schedule will appear here.</p>
+              </div>
+            )}
+
+            {/* Interactive Ghost Mode Header */}
+            {(generatedTimetable || ghostData) && (
+              <div className="px-6 pt-4 pb-2 border-b border-gray-800 flex flex-wrap items-center gap-3 bg-black/20">
+                <span className="text-xs font-bold text-gray-500 uppercase tracking-widest">Interactive Mode:</span>
+                {ghostData && Object.keys(ghostData).map(subj => (
+                  <button
+                    key={subj}
+                    onClick={() => handleGhostClick(subj)}
+                    className={`px-3 py-1 rounded text-xs font-bold transition-all border ${activeGhostSubjects.includes(subj)
+                      ? 'bg-indigo-600 text-white border-indigo-500 shadow-[0_0_10px_rgba(99,102,241,0.4)]'
+                      : 'bg-gray-800 text-gray-400 border-gray-700 hover:border-gray-500 hover:text-gray-200'
+                      }`}
+                  >
+                    {subj}
+                  </button>
+                ))}
+                {activeGhostSubjects.length > 0 && (
+                  <button onClick={() => setActiveGhostSubjects([])} className="text-xs text-red-400 hover:text-red-300 font-medium ml-2 transition-colors">Clear</button>
+                )}
+              </div>
+            )}
+
+            {/* Timetable View */}
+            {(generatedTimetable || activeGhostSubjects.length > 0) && (
+              <div className="p-2">
+                <TimetableView
+                  timetable={generatedTimetable || []}
+                  ghostSubjects={activeGhostSubjects}
+                  allGhostData={ghostData}
+                />
+              </div>
             )}
           </div>
-        )}
 
-        {/* Step 3: Result */}
-        {status === 'success' && generatedTimetable && (
-          <section className="mt-12 animate-fade-in-up">
-            <TimetableView timetable={generatedTimetable} />
-          </section>
-        )}
+          {/* Conflict Box */}
+          {status === 'conflict' && conflictDetails && (
+            <div className="animate-slide-up bg-gray-900/40 backdrop-blur-sm rounded-xl border-l-4 border-red-500 border-y border-r border-gray-800 shadow-xl p-6 relative overflow-hidden">
+              <div className="absolute top-0 right-0 w-32 h-32 bg-red-500/5 rounded-full blur-[50px] pointer-events-none"></div>
+              <h3 className="text-red-400 font-bold text-lg mb-4 flex items-center relative z-10">
+                <span className="text-2xl mr-3 filter drop-shadow-[0_0_5px_rgba(239,68,68,0.5)]">⚠️</span> Conflict Analysis
+              </h3>
+              <div className="space-y-4 relative z-10">
+                {conflictDetails.map((conflict, idx) => (
+                  <div key={idx} className="bg-red-950/30 p-4 rounded-lg border border-red-500/20 hover:border-red-500/40 transition-colors">
+                    {conflict.type === 'hard_overlap' ? (
+                      <div>
+                        <p className="text-red-200 font-bold mb-1 flex items-center gap-2">
+                          {conflict.subjects[0]} <span className="text-red-500/50">⚔️</span> {conflict.subjects[1]}
+                        </p>
+                        <p className="text-red-400/80 text-sm">
+                          These subjects cross at the same time. One cannot be scheduled.
+                        </p>
+                      </div>
+                    ) : (
+                      <p className="text-red-300 text-sm">{conflict.message}</p>
+                    )}
+                  </div>
+                ))}
+                {suggestion && (
+                  <div className="mt-2 pt-4 border-t border-red-500/20">
+                    <p className="text-xs font-bold text-gray-500 uppercase tracking-widest">Recommendation</p>
+                    <p className="text-indigo-400 font-medium text-sm mt-1">{suggestion}</p>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+        </section>
+
+        {/* SECTION 2: Controls (BOTTOM) */}
+        <section className="glass-panel p-6 md:p-8 rounded-2xl shadow-2xl relative overflow-hidden">
+          {/* Subtly Glowing Background Blob */}
+          <div className="absolute top-[-20%] right-[-10%] w-[400px] h-[400px] bg-indigo-900/10 rounded-full blur-[80px] pointer-events-none"></div>
+
+          <div className="flex flex-col md:flex-row gap-8 items-start relative z-10">
+            {/* Subject Selection */}
+            <div className="flex-1 w-full">
+              <h2 className="text-lg font-bold text-gray-100 mb-6 flex items-center border-b border-gray-800 pb-4">
+                <span className="bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 w-7 h-7 rounded-lg flex items-center justify-center text-xs mr-3 shadow-[0_0_10px_rgba(99,102,241,0.2)]">1</span>
+                Select Subjects & Staff
+              </h2>
+              <div className="max-h-[450px] overflow-y-auto pr-2 custom-scrollbar">
+                <CourseSelector
+                  courses={courses}
+                  selectedSubjects={selectedSubjects}
+                  compatibleSubjects={compatibleSubjects}
+                  onToggleSubject={handleToggleSubject}
+                  preferredFaculties={preferredFaculties}
+                  onSetPreference={handleSetPreference}
+                />
+              </div>
+            </div>
+
+            {/* Preferences & Generate */}
+            <div className="w-full md:w-1/3 border-l-0 md:border-l border-gray-800 pl-0 md:pl-8 pt-6 md:pt-0 border-t md:border-t-0">
+              <h2 className="text-lg font-bold text-gray-100 mb-6 flex items-center border-b border-gray-800 pb-4">
+                <span className="bg-violet-500/20 text-violet-300 border border-violet-500/30 w-7 h-7 rounded-lg flex items-center justify-center text-xs mr-3 shadow-[0_0_10px_rgba(139,92,246,0.2)]">2</span>
+                Preferences
+              </h2>
+              <PreferencePanel
+                leaveDay={leaveDay}
+                setLeaveDay={setLeaveDay}
+                onGenerate={handleGenerate}
+              />
+            </div>
+          </div>
+        </section>
+
+        {/* NEW SECTION 3: Dashboard Info (Extra Content) */}
+        <section className="grid md:grid-cols-3 gap-6">
+          <div className="glass-panel p-5 rounded-xl border-l-4 border-l-indigo-500">
+            <h3 className="text-indigo-400 font-bold mb-2">🚀 Pro Tip</h3>
+            <p className="text-sm text-gray-400">Selecting a <strong>Leave Day</strong> early helps filter out incompatible courses instantly.</p>
+          </div>
+          <div className="glass-panel p-5 rounded-xl border-l-4 border-l-violet-500">
+            <h3 className="text-violet-400 font-bold mb-2">👻 Ghost Mode</h3>
+            <p className="text-sm text-gray-400">Click subject buttons above the timetable to see <strong>all possible slots</strong> for that course.</p>
+          </div>
+          <div className="glass-panel p-5 rounded-xl border-l-4 border-l-pink-500">
+            <h3 className="text-pink-400 font-bold mb-2">⚡ Status</h3>
+            <p className="text-sm text-gray-400">
+              System: <span className="text-green-400">Online</span> • Solver: <span className="text-green-400">Ready</span>
+            </p>
+          </div>
+        </section>
 
       </main>
-
-      {/* Footer */}
-      <footer className="bg-white border-t border-gray-200 py-8 text-center text-gray-500 text-sm">
-        <p>© 2026 PlanWiz. Built with CSP & Backtracking.</p>
-      </footer>
     </div>
   );
 }

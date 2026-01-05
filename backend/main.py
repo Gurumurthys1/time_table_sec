@@ -51,5 +51,38 @@ def generate_timetable(request: PreferenceRequest):
     result = solver.solve()
     return result
 
+@app.post("/api/check-compatibility")
+def check_compatibility(request: PreferenceRequest):
+    """
+    Returns a list of subjects that CAN be added to the current selection without causing conflict.
+    """
+    # 1. Deduce all available subjects from the raw data
+    all_subjects = list(set(c['course_name'] for c in request.courses_data))
+    
+    # 2. Identify candidates (subjects not yet selected)
+    candidates = [s for s in all_subjects if s not in request.selected_subjects]
+    
+    compatible_subjects = []
+    
+    # 3. For each candidate, check if (Selected + Candidate) is solvable
+    for cand in candidates:
+        temp_selection = request.selected_subjects + [cand]
+        
+        # Instantiate Solver for this specific combination
+        # Note: We pass empty preferred_faculties for this check to be lenient (strict hard constraint check only)
+        # OR should we include them? User wants to know if it fits "available options".
+        # Let's include them to be accurate to user's current settings.
+        solver = TimetableCSP(
+            temp_selection,
+            request.courses_data,
+            request.leave_day,
+            request.preferred_faculties
+        )
+        
+        if solver.is_solvable():
+            compatible_subjects.append(cand)
+            
+    return {"compatible_subjects": compatible_subjects}
+
 if __name__ == "__main__":
     uvicorn.run("backend.main:app", host="0.0.0.0", port=8000, reload=True)
