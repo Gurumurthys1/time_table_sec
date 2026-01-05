@@ -13,7 +13,7 @@ const PreferencePanel = ({ leaveDay, setLeaveDay, onGenerate }) => {
                 <label className="text-xs font-bold text-gray-400 uppercase tracking-widest flex items-center mb-3">
                     <img
                         src={logoImage}
-                        alt="PlanWiz"
+                        alt="PlanWizz"
                         className="w-5 h-5 object-contain mr-2 filter drop-shadow-[0_0_8px_rgba(99,102,241,0.5)]"
                     />
                     Leave Day Preference
@@ -36,7 +36,7 @@ const PreferencePanel = ({ leaveDay, setLeaveDay, onGenerate }) => {
                 </div>
 
                 <p className="text-xs text-gray-500 mt-2 pl-1">
-                    {leaveDay ? `PlanWiz will attempt to keep ${leaveDay}s free.` : "No specific day off requested."}
+                    {leaveDay ? `PlanWizz will attempt to keep ${leaveDay}s free.` : "No specific day off requested."}
                 </p>
             </div>
 

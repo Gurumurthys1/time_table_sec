@@ -1,7 +1,7 @@
 services:
   # Backend
   - type: web
-    name: planwiz-backend
+    name: planwizz-backend
     env: python
     buildCommand: pip install -r backend/requirements.txt
     startCommand: uvicorn backend.main:app --host 0.0.0.0 --port $PORT
@@ -11,7 +11,7 @@ services:
 
   # Frontend
   - type: static
-    name: planwiz-frontend
+    name: planwizz-frontend
     env: static
     buildCommand: cd frontend && npm install && npm run build
     staticPublishPath: frontend/dist
@@ -19,5 +19,5 @@ services:
       - key: VITE_API_URL
         fromService:
           type: web
-          name: planwiz-backend
+          name: planwizz-backend
           property: host

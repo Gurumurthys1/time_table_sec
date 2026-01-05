@@ -6,7 +6,7 @@ from backend.extractor import extract_courses
 from backend.solver import TimetableCSP
 from fastapi.middleware.cors import CORSMiddleware
 
-app = FastAPI(title="PlanWiz API")
+app = FastAPI(title="PlanWizz API")
 
 # Enable CORS for frontend
 app.add_middleware(

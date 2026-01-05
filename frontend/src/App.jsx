@@ -172,7 +172,7 @@ function App() {
           <div className="inline-flex mb-1 transition-all hover:scale-110 duration-500">
             <img
               src={logoImage}
-              alt="PlanWiz Logo"
+              alt="PlanWizz Logo"
               className="w-32 h-32 object-contain filter drop-shadow-[0_0_20px_rgba(99,102,241,0.6)] drop-shadow-[0_10px_10px_rgba(0,0,0,0.5)]"
             />
           </div>
@@ -212,7 +212,7 @@ function App() {
               <span className="text-gray-400 group-hover:text-gray-200 text-sm font-medium">Dharshan D</span>
             </a>
           </div>
-          <p className="text-gray-600 text-sm">© 2026 PlanWiz. Intelligent Scheduling.</p>
+          <p className="text-gray-600 text-sm">© 2026 PlanWizz. Intelligent Scheduling.</p>
         </footer>
       </div>
     );
@@ -234,12 +234,12 @@ function App() {
               ? 'bg-indigo-600/20 border border-indigo-500/30 group-hover:bg-indigo-600/40'
               : 'bg-gradient-to-br from-indigo-100 to-purple-100 border border-purple-300 group-hover:shadow-xl'
               }`}>
-              <img src={logoImage} alt="PlanWiz Logo" className="w-8 h-8 object-contain group-hover:scale-110 transition-transform" />            </div>
+              <img src={logoImage} alt="PlanWizz Logo" className="w-12 h-12 object-contain group-hover:scale-110 transition-transform" />            </div>
             <div>
               <h1 className={`text-xl font-extrabold tracking-tight transition-colors ${isDarkMode
                 ? 'text-white group-hover:text-indigo-200'
                 : 'text-gray-900 group-hover:text-indigo-600'
-                }`}>PlanWiz</h1>
+                }`}>PlanWizz</h1>
               <p className={`text-xs font-medium tracking-wider ${isDarkMode ? 'text-gray-500' : 'text-gray-500'
                 }`}>SMART TIMETABLE</p>
             </div>
@@ -293,7 +293,7 @@ function App() {
               <div className="transition-transform hover:scale-110">
                 <img
                   src={logoImage}
-                  alt="PlanWiz"
+                  alt="PlanWizz"
                   className="w-10 h-10 object-contain filter drop-shadow-[0_0_8px_rgba(99,102,241,0.4)]"
                 />
               </div>
@@ -516,10 +516,10 @@ function App() {
           <div className="flex items-center gap-3 opacity-80 hover:opacity-100 transition-all cursor-default group">
             <img
               src={logoImage}
-              alt="PlanWiz"
+              alt="PlanWizz"
               className="w-5 h-5 object-contain filter drop-shadow-[0_0_5px_rgba(99,102,241,0.3)] group-hover:drop-shadow-[0_0_8px_rgba(99,102,241,0.5)]"
             />
-            <span className="text-xs font-bold tracking-widest text-gray-400">PLANWIZ © 2026</span>
+            <span className="text-xs font-bold tracking-widest text-gray-400">PLANWIZZ © 2026</span>
           </div>
           <div className="flex items-center gap-4">
             <a href="https://www.linkedin.com/in/gurumurthys/" target="_blank" rel="noopener noreferrer" className="text-gray-500 hover:text-indigo-400 transition-colors">

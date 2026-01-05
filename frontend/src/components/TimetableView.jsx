@@ -91,7 +91,7 @@ const TimetableView = ({ timetable, ghostSubjects = [], allGhostData = null }) =
                 }
             });
             const link = document.createElement('a');
-            link.download = 'PlanWiz-Timetable.png';
+            link.download = 'PlanWizz-Timetable.png';
             link.href = canvas.toDataURL('image/png');
             link.click();
         } catch (err) {
@@ -148,7 +148,7 @@ const TimetableView = ({ timetable, ghostSubjects = [], allGhostData = null }) =
                 format: [canvas.width, canvas.height]
             });
             pdf.addImage(imgData, 'PNG', 0, 0, canvas.width, canvas.height);
-            pdf.save('PlanWiz-Timetable.pdf');
+            pdf.save('PlanWizz-Timetable.pdf');
         } catch (err) {
             console.error("PDF Export failed:", err);
             alert("PDF Export failed.");
@@ -161,7 +161,7 @@ const TimetableView = ({ timetable, ghostSubjects = [], allGhostData = null }) =
                 <h2 className="text-xl font-bold text-gray-100 flex items-center">
                     <img
                         src={logoImage}
-                        alt="PlanWiz"
+                        alt="PlanWizz"
                         className="w-8 h-8 object-contain mr-3 filter drop-shadow-[0_0_8px_rgba(99,102,241,0.5)]"
                     />
                     My Timetable
