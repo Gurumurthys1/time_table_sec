@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Layers } from 'lucide-react';
+import { Layers, Linkedin } from 'lucide-react';
 import UploadZone from './components/UploadZone.jsx';
 import CourseSelector from './components/CourseSelector.jsx';
 import PreferencePanel from './components/PreferencePanel.jsx';
@@ -152,8 +152,29 @@ function App() {
           <UploadZone onUploadSuccess={handleUploadSuccess} />
         </div>
 
-        <footer className="mt-20 text-gray-600 text-sm">
-          © 2026 PlanWiz. Intelligent Scheduling.
+        <footer className="mt-20 text-center space-y-4 relative z-10">
+          <div className="flex items-center justify-center gap-6 mb-3">
+            <span className="text-gray-500 text-sm font-medium">Developed by</span>
+            <a
+              href="https://www.linkedin.com/in/gurumurthys/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-2 px-4 py-2 bg-gray-900/50 hover:bg-indigo-900/30 border border-gray-800 hover:border-indigo-500/50 rounded-lg transition-all group"
+            >
+              <Linkedin className="w-4 h-4 text-indigo-400 group-hover:text-indigo-300" />
+              <span className="text-gray-400 group-hover:text-gray-200 text-sm font-medium">Gurumurthy S</span>
+            </a>
+            <a
+              href="https://www.linkedin.com/in/dharshan2006"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-2 px-4 py-2 bg-gray-900/50 hover:bg-indigo-900/30 border border-gray-800 hover:border-indigo-500/50 rounded-lg transition-all group"
+            >
+              <Linkedin className="w-4 h-4 text-indigo-400 group-hover:text-indigo-300" />
+              <span className="text-gray-400 group-hover:text-gray-200 text-sm font-medium">Dharshan D</span>
+            </a>
+          </div>
+          <p className="text-gray-600 text-sm">© 2026 PlanWiz. Intelligent Scheduling.</p>
         </footer>
       </div>
     );
