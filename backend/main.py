@@ -23,6 +23,9 @@ class PreferenceRequest(BaseModel):
     leave_day: str
     preferred_faculties: Optional[Dict[str, str]] = {}
 
+class TextUploadRequest(BaseModel):
+    text: str
+
 @app.get("/api/health")
 def health_check():
     return {"status": "ok"}
@@ -38,6 +41,15 @@ async def upload_pdf(file: UploadFile = File(...)):
         return {"courses": extracted_data}
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to process PDF: {str(e)}")
+
+@app.post("/api/upload-text")
+async def upload_text(request: TextUploadRequest):
+    try:
+        from backend.extractor import extract_courses_from_text
+        extracted_data = extract_courses_from_text(request.text)
+        return {"courses": extracted_data}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to process text: {str(e)}")
 
 @app.post("/api/generate")
 def generate_timetable(request: PreferenceRequest):

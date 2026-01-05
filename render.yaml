@@ -1,4 +1,5 @@
 services:
+  # Backend
   - type: web
     name: planwiz-backend
     env: python
@@ -7,3 +8,16 @@ services:
     envVars:
       - key: PYTHON_VERSION
         value: 3.11.0
+
+  # Frontend
+  - type: static
+    name: planwiz-frontend
+    env: static
+    buildCommand: cd frontend && npm install && npm run build
+    staticPublishPath: frontend/dist
+    envVars:
+      - key: VITE_API_URL
+        fromService:
+          type: web
+          name: planwiz-backend
+          property: host

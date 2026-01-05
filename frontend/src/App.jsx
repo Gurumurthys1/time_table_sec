@@ -1,10 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { Layers, Linkedin } from 'lucide-react';
+import { Layers, Linkedin, User, X, Lamp, Download, FileImage } from 'lucide-react';
+import logoImage from './assets/logo.png';
 import UploadZone from './components/UploadZone.jsx';
 import CourseSelector from './components/CourseSelector.jsx';
 import PreferencePanel from './components/PreferencePanel.jsx';
 import TimetableView from './components/TimetableView.jsx';
+import Toast from './components/Toast.jsx';
 import { generateTimetable, checkCompatibility } from './api';
+import { exportAsPDF, exportAsPNG } from './utils/exportUtils';
 
 function App() {
   const [courses, setCourses] = useState(null);
@@ -18,6 +21,9 @@ function App() {
   const [conflictDetails, setConflictDetails] = useState(null);
   const [ghostData, setGhostData] = useState(null);
   const [activeGhostSubjects, setActiveGhostSubjects] = useState([]);
+  const [showUserPopup, setShowUserPopup] = useState(false);
+  const [isDarkMode, setIsDarkMode] = useState(true);
+  const [toast, setToast] = useState(null);
 
   // Intelligence: Active list of subjects that fit with current selection
   const [compatibleSubjects, setCompatibleSubjects] = useState(null);
@@ -67,6 +73,7 @@ function App() {
     setStatus(null);
     setSuggestion("");
     setCompatibleSubjects(null);
+    setToast({ message: '✅ PDF uploaded and analyzed successfully!', type: 'success' });
   };
 
   const handleToggleSubject = (subject) => {
@@ -107,23 +114,31 @@ function App() {
       if (result.status === 'success') {
         setGeneratedTimetable(result.timetable);
         setStatus('success');
+        setToast({ message: '✅ Timetable generated successfully!', type: 'success' });
       } else if (result.status === 'success_with_adjustment') {
         setGeneratedTimetable(result.timetable);
         setStatus('success_with_adjustment');
         setStatusMessage(result.message);
+        setToast({ message: `⚠️ Timetable generated with faculty changes: ${result.message}`, type: 'info' });
       } else if (result.status === 'conflict') {
         setStatus('conflict');
         setStatusMessage(result.reason);
         setConflictDetails(result.conflict_details);
         setSuggestion(result.suggestion || "Try changing your leave day or faculty preferences.");
         setGhostData(result.all_possible_slots || {}); // Even on conflict show ghosts
+        setToast({
+          message: `❌ Scheduling Conflict: Please change your preference or leave day to generate the timetable.`,
+          type: 'error'
+        });
       } else {
         setStatus('error');
         setStatusMessage(result.reason || "Unknown error");
+        setToast({ message: `❌ Error: ${result.reason || 'Unknown error'}`, type: 'error' });
       }
     } catch (err) {
       setStatus('error');
       setStatusMessage("Failed to connect to server.");
+      setToast({ message: '❌ Failed to connect to server', type: 'error' });
       console.error(err);
     }
   };
@@ -131,19 +146,42 @@ function App() {
   // View 1: Upload Page (Landing)
   if (!courses) {
     return (
-      <div className="min-h-screen bg-black bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-gray-900 via-black to-black flex flex-col justify-center items-center font-sans text-gray-100 p-6 relative overflow-hidden">
+      <div className={`min-h-screen flex flex-col justify-center items-center font-sans p-6 relative overflow-hidden transition-colors duration-300 ${isDarkMode
+        ? 'bg-black bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-gray-900 via-black to-black text-gray-100'
+        : 'bg-gradient-to-br from-blue-50 via-white to-purple-50 text-gray-900'
+        }`}>
+        {/* Theme Toggle - Landing Page */}
+        <button
+          onClick={() => setIsDarkMode(!isDarkMode)}
+          className={`absolute top-6 right-6 p-3 rounded-full transition-all z-50 ${isDarkMode
+            ? 'bg-gray-900/50 border border-indigo-500/30 text-indigo-400 hover:bg-indigo-900/30'
+            : 'bg-white/80 border border-purple-300 text-purple-600 hover:bg-purple-50 shadow-lg'
+            }`}
+          title={isDarkMode ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
+        >
+          <Lamp className={`w-5 h-5 transition-transform ${!isDarkMode ? 'rotate-12' : ''}`} />
+        </button>
+
         {/* Ambient Background Glow */}
-        <div className="absolute top-[-10%] left-[-10%] w-[500px] h-[500px] bg-indigo-900/20 rounded-full blur-[120px] pointer-events-none"></div>
-        <div className="absolute bottom-[-10%] right-[-10%] w-[500px] h-[500px] bg-violet-900/20 rounded-full blur-[120px] pointer-events-none"></div>
+        <div className={`absolute top-[-10%] left-[-10%] w-[500px] h-[500px] rounded-full blur-[120px] pointer-events-none ${isDarkMode ? 'bg-indigo-900/20' : 'bg-blue-400/10'
+          }`}></div>
+        <div className={`absolute bottom-[-10%] right-[-10%] w-[500px] h-[500px] rounded-full blur-[120px] pointer-events-none ${isDarkMode ? 'bg-violet-900/20' : 'bg-purple-400/10'
+          }`}></div>
 
         <div className="text-center mb-12 animate-slide-up relative z-10">
-          <div className="inline-flex p-4 bg-gray-900/50 backdrop-blur-xl border border-indigo-500/30 rounded-2xl shadow-[0_0_30px_rgba(99,102,241,0.3)] mb-8 animate-pulse-glow">
-            <Layers className="w-12 h-12 text-indigo-400" />
+          <div className="inline-flex mb-1 transition-all hover:scale-110 duration-500">
+            <img
+              src={logoImage}
+              alt="PlanWiz Logo"
+              className="w-32 h-32 object-contain filter drop-shadow-[0_0_20px_rgba(99,102,241,0.6)] drop-shadow-[0_10px_10px_rgba(0,0,0,0.5)]"
+            />
           </div>
-          <h1 className="text-5xl font-extrabold tracking-tight text-white mb-4 drop-shadow-lg">
+          <h1 className={`text-5xl font-extrabold tracking-tight mb-4 drop-shadow-lg ${isDarkMode ? 'text-white' : 'text-gray-900'
+            }`}>
             Plan<span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-violet-400">Wiz</span>
           </h1>
-          <p className="text-xl text-gray-400 font-medium max-w-md mx-auto leading-relaxed">
+          <p className={`text-xl font-medium max-w-md mx-auto leading-relaxed ${isDarkMode ? 'text-gray-400' : 'text-gray-600'
+            }`}>
             Upload your enrollment PDF to generate an AI-optimized student timetable in seconds.
           </p>
         </div>
@@ -186,25 +224,137 @@ function App() {
 
       {/* Header */}
       <header className="sticky top-0 z-50 transition-all duration-300">
-        <div className="absolute inset-0 bg-black/60 backdrop-blur-xl border-b border-gray-800"></div>
+        <div className={`absolute inset-0 backdrop-blur-xl border-b transition-colors ${isDarkMode
+          ? 'bg-black/60 border-gray-800'
+          : 'bg-white/80 border-gray-200 shadow-sm'
+          }`}></div>
         <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between relative z-10">
-          <div className="flex items-center gap-3 cursor-pointer group" onClick={() => window.location.reload()}>
-            <div className="p-2 bg-indigo-600/20 border border-indigo-500/30 rounded-lg shadow-lg group-hover:bg-indigo-600/40 transition-all">
-              <Layers className="w-5 h-5 text-indigo-400 group-hover:text-indigo-300" />
-            </div>
+          <div className="flex items-center gap-4 cursor-pointer group" onClick={() => window.location.reload()}>
+            <div className={`p-3 rounded-2xl shadow-lg transition-all overflow-hidden ${isDarkMode
+              ? 'bg-indigo-600/20 border border-indigo-500/30 group-hover:bg-indigo-600/40'
+              : 'bg-gradient-to-br from-indigo-100 to-purple-100 border border-purple-300 group-hover:shadow-xl'
+              }`}>
+              <img src={logoImage} alt="PlanWiz Logo" className="w-8 h-8 object-contain group-hover:scale-110 transition-transform" />            </div>
             <div>
-              <h1 className="text-lg font-extrabold tracking-tight text-white group-hover:text-indigo-200 transition-colors">PlanWiz</h1>
-              <p className="text-xs text-gray-500 font-medium tracking-wider">DASHBOARD</p>
+              <h1 className={`text-xl font-extrabold tracking-tight transition-colors ${isDarkMode
+                ? 'text-white group-hover:text-indigo-200'
+                : 'text-gray-900 group-hover:text-indigo-600'
+                }`}>PlanWiz</h1>
+              <p className={`text-xs font-medium tracking-wider ${isDarkMode ? 'text-gray-500' : 'text-gray-500'
+                }`}>SMART TIMETABLE</p>
             </div>
           </div>
-          <button
-            onClick={() => window.location.reload()}
-            className="px-4 py-2 text-sm font-medium text-gray-400 hover:text-white hover:bg-white/5 rounded-lg transition-all"
-          >
-            Reset Session
-          </button>
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => setIsDarkMode(!isDarkMode)}
+              className={`p-2 rounded-lg transition-all ${isDarkMode
+                ? 'text-gray-400 hover:text-white hover:bg-white/5'
+                : 'text-gray-600 hover:text-purple-600 hover:bg-purple-50'
+                }`}
+              title={isDarkMode ? 'Light Mode' : 'Dark Mode'}
+            >
+              <Lamp className={`w-5 h-5 transition-transform ${!isDarkMode ? 'rotate-12' : ''}`} />
+            </button>
+            <button
+              onClick={() => setShowUserPopup(!showUserPopup)}
+              className={`p-2 rounded-lg transition-all ${isDarkMode
+                ? 'text-gray-400 hover:text-white hover:bg-white/5'
+                : 'text-gray-600 hover:text-purple-600 hover:bg-purple-50'
+                }`}
+              title="User Info"
+            >
+              <User className="w-5 h-5" />
+            </button>
+            <button
+              onClick={() => window.location.reload()}
+              className={`px-4 py-2 text-sm font-medium rounded-lg transition-all ${isDarkMode
+                ? 'text-gray-400 hover:text-white hover:bg-white/5'
+                : 'text-gray-600 hover:text-purple-600 hover:bg-purple-50'
+                }`}
+            >
+              Reset Session
+            </button>
+          </div>
         </div>
       </header>
+
+      {/* User Popup in Right Corner */}
+      {showUserPopup && (
+        <div className="fixed top-20 right-6 z-50 animate-slide-up">
+          <div className="bg-gray-900/95 backdrop-blur-xl border border-indigo-500/30 rounded-2xl shadow-[0_0_30px_rgba(99,102,241,0.3)] p-6 w-80 relative">
+            <button
+              onClick={() => setShowUserPopup(false)}
+              className="absolute top-3 right-3 text-gray-500 hover:text-white transition-colors"
+            >
+              <X className="w-4 h-4" />
+            </button>
+
+            <div className="flex items-center gap-4 mb-4">
+              <div className="transition-transform hover:scale-110">
+                <img
+                  src={logoImage}
+                  alt="PlanWiz"
+                  className="w-10 h-10 object-contain filter drop-shadow-[0_0_8px_rgba(99,102,241,0.4)]"
+                />
+              </div>
+              <div>
+                <h3 className="text-white font-bold text-lg">Welcome!</h3>
+                <p className="text-gray-400 text-sm">Timetable Generator</p>
+              </div>
+            </div>
+
+            <div className="space-y-3 border-t border-gray-800 pt-4">
+              <div className="flex items-center justify-between">
+                <span className="text-gray-400 text-sm">Subjects Selected</span>
+                <span className="text-white font-bold">{selectedSubjects.length}</span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-gray-400 text-sm">Status</span>
+                <span className={`font-bold text-sm ${status === 'success' ? 'text-green-400' :
+                  status === 'conflict' ? 'text-red-400' :
+                    status === 'loading' ? 'text-yellow-400' :
+                      'text-gray-400'
+                  }`}>
+                  {status === 'success' ? 'Generated ✓' :
+                    status === 'conflict' ? 'Conflict!' :
+                      status === 'loading' ? 'Loading...' :
+                        'Ready'}
+                </span>
+              </div>
+              {leaveDay && (
+                <div className="flex items-center justify-between">
+                  <span className="text-gray-400 text-sm">Leave Day</span>
+                  <span className="text-white font-bold text-sm">{leaveDay}</span>
+                </div>
+              )}
+            </div>
+
+            <div className="mt-4 pt-4 border-t border-gray-800">
+              <p className="text-gray-500 text-xs text-center">Developed by</p>
+              <div className="flex justify-center gap-2 mt-2">
+                <a
+                  href="https://www.linkedin.com/in/gurumurthys/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-1 px-3 py-1 bg-gray-800/50 hover:bg-indigo-900/30 border border-gray-700 hover:border-indigo-500/50 rounded-lg transition-all text-xs"
+                >
+                  <Linkedin className="w-3 h-3 text-indigo-400" />
+                  <span className="text-gray-300">Gurumurthy S</span>
+                </a>
+                <a
+                  href="https://www.linkedin.com/in/dharshan2006"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-1 px-3 py-1 bg-gray-800/50 hover:bg-indigo-900/30 border border-gray-700 hover:border-indigo-500/50 rounded-lg transition-all text-xs"
+                >
+                  <Linkedin className="w-3 h-3 text-indigo-400" />
+                  <span className="text-gray-300">Dharshan D</span>
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Dashboard Content - Vertical Stack */}
       <main className="flex-1 w-full max-w-6xl mx-auto p-4 md:p-8 space-y-12 animate-fade-in">
@@ -359,6 +509,37 @@ function App() {
         </section>
 
       </main>
+
+      {/* Dashboard Footer */}
+      <footer className="w-full py-8 border-t border-gray-800 bg-black/40 backdrop-blur-sm mt-auto">
+        <div className="max-w-6xl mx-auto px-6 flex flex-col md:flex-row items-center justify-between gap-6">
+          <div className="flex items-center gap-3 opacity-80 hover:opacity-100 transition-all cursor-default group">
+            <img
+              src={logoImage}
+              alt="PlanWiz"
+              className="w-5 h-5 object-contain filter drop-shadow-[0_0_5px_rgba(99,102,241,0.3)] group-hover:drop-shadow-[0_0_8px_rgba(99,102,241,0.5)]"
+            />
+            <span className="text-xs font-bold tracking-widest text-gray-400">PLANWIZ © 2026</span>
+          </div>
+          <div className="flex items-center gap-4">
+            <a href="https://www.linkedin.com/in/gurumurthys/" target="_blank" rel="noopener noreferrer" className="text-gray-500 hover:text-indigo-400 transition-colors">
+              <Linkedin className="w-4 h-4" />
+            </a>
+            <a href="https://www.linkedin.com/in/dharshan2006" target="_blank" rel="noopener noreferrer" className="text-gray-500 hover:text-indigo-400 transition-colors">
+              <Linkedin className="w-4 h-4" />
+            </a>
+          </div>
+        </div>
+      </footer>
+
+      {/* Persistence Notifications */}
+      {toast && (
+        <Toast
+          message={toast.message}
+          type={toast.type}
+          onClose={() => setToast(null)}
+        />
+      )}
     </div>
   );
 }

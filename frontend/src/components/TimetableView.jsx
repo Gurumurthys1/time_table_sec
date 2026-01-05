@@ -1,8 +1,12 @@
-import React, { useState } from 'react';
-import { Clock, Maximize2, Minimize2 } from 'lucide-react';
+import React, { useState, useRef } from 'react';
+import { Maximize2, Minimize2, Clock, Download, FileImage, FileText } from 'lucide-react';
+import logoImage from '../assets/logo.png';
+import html2canvas from 'html2canvas';
+import { jsPDF } from 'jspdf';
 
 const TimetableView = ({ timetable, ghostSubjects = [], allGhostData = null }) => {
     const [isFullScreen, setIsFullScreen] = useState(false);
+    const tableRef = useRef(null);
     const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"];
     const times = [
         "08:00 - 09:00", "09:00 - 10:00", "10:00 - 11:00",
@@ -33,9 +37,6 @@ const TimetableView = ({ timetable, ghostSubjects = [], allGhostData = null }) =
                 allGhostData[subj].forEach(slot => {
                     if (!ghostMap[slot.day]) ghostMap[slot.day] = {};
                     const tKey = parseTime(slot.time);
-                    // If conflict with existing booking, mark as collision?
-                    // For now, simple overlay prioritizing booking, or showing partial?
-                    // Let's just store it.
                     if (!ghostMap[slot.day][tKey]) ghostMap[slot.day][tKey] = [];
                     ghostMap[slot.day][tKey].push({ ...slot, subject: subj, type: 'ghost' });
                 });
@@ -43,25 +44,163 @@ const TimetableView = ({ timetable, ghostSubjects = [], allGhostData = null }) =
         });
     }
 
+    const handleExportImage = async () => {
+        if (!tableRef.current) return;
+        try {
+            const canvas = await html2canvas(tableRef.current, {
+                backgroundColor: '#030712',
+                scale: 2,
+                logging: true,
+                useCORS: true,
+                onclone: (clonedDoc) => {
+                    const elements = clonedDoc.getElementsByTagName('*');
+                    for (let i = 0; i < elements.length; i++) {
+                        const el = elements[i];
+                        const style = window.getComputedStyle(el);
+
+                        // Comprehensive list of properties that might contain colors or unsupported formats
+                        const props = [
+                            'color', 'backgroundColor', 'backgroundImage',
+                            'borderColor', 'borderTopColor', 'borderBottomColor', 'borderLeftColor', 'borderRightColor',
+                            'outlineColor',
+                            'fill', 'stroke', 'stopColor', 'floodColor', 'lightingColor',
+                            'boxShadow', 'textShadow',
+                            'filter', 'backdropFilter',
+                            'caretColor', 'textDecorationColor', 'columnRuleColor',
+                            'webkitTextStrokeColor', 'webkitTextFillColor'
+                        ];
+
+                        props.forEach(prop => {
+                            const val = style[prop];
+                            if (val && (val.includes('oklch') || val.includes('oklab') || val.includes('display-p3'))) {
+                                // Provide safe fallbacks based on property type
+                                if (prop.toLowerCase().includes('color') || prop === 'fill' || prop === 'stroke') {
+                                    // Use simple hex/rgba fallbacks
+                                    if (prop === 'color') el.style[prop] = '#f3f4f6';
+                                    else if (prop === 'backgroundColor') el.style[prop] = 'rgba(17, 24, 39, 0.9)';
+                                    else if (prop.includes('border')) el.style[prop] = 'rgba(31, 41, 55, 0.5)';
+                                    else if (prop === 'fill' || prop === 'stroke') el.style[prop] = 'currentColor';
+                                    else el.style[prop] = 'transparent';
+                                } else {
+                                    // For complex properties like images, shadows, filters -> remove them to prevent parse errors
+                                    el.style[prop] = 'none';
+                                }
+                            }
+                        });
+                    }
+                }
+            });
+            const link = document.createElement('a');
+            link.download = 'PlanWiz-Timetable.png';
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+        } catch (err) {
+            console.error("Export failed:", err);
+            alert("Export failed. Please try a different browser.");
+        }
+    };
+
+    const handleExportPDF = async () => {
+        if (!tableRef.current) return;
+        try {
+            const canvas = await html2canvas(tableRef.current, {
+                backgroundColor: '#030712',
+                scale: 2,
+                useCORS: true,
+                onclone: (clonedDoc) => {
+                    const elements = clonedDoc.getElementsByTagName('*');
+                    for (let i = 0; i < elements.length; i++) {
+                        const el = elements[i];
+                        const style = window.getComputedStyle(el);
+
+                        const props = [
+                            'color', 'backgroundColor', 'backgroundImage',
+                            'borderColor', 'borderTopColor', 'borderBottomColor', 'borderLeftColor', 'borderRightColor',
+                            'outlineColor',
+                            'fill', 'stroke', 'stopColor', 'floodColor', 'lightingColor',
+                            'boxShadow', 'textShadow',
+                            'filter', 'backdropFilter',
+                            'caretColor', 'textDecorationColor', 'columnRuleColor',
+                            'webkitTextStrokeColor', 'webkitTextFillColor'
+                        ];
+
+                        props.forEach(prop => {
+                            const val = style[prop];
+                            if (val && (val.includes('oklch') || val.includes('oklab') || val.includes('display-p3'))) {
+                                if (prop.toLowerCase().includes('color') || prop === 'fill' || prop === 'stroke') {
+                                    if (prop === 'color') el.style[prop] = '#f3f4f6';
+                                    else if (prop === 'backgroundColor') el.style[prop] = 'rgba(17, 24, 39, 0.9)';
+                                    else if (prop.includes('border')) el.style[prop] = 'rgba(31, 41, 55, 0.5)';
+                                    else if (prop === 'fill' || prop === 'stroke') el.style[prop] = 'currentColor';
+                                    else el.style[prop] = 'transparent';
+                                } else {
+                                    el.style[prop] = 'none';
+                                }
+                            }
+                        });
+                    }
+                }
+            });
+            const imgData = canvas.toDataURL('image/png');
+            const pdf = new jsPDF({
+                orientation: 'landscape',
+                unit: 'px',
+                format: [canvas.width, canvas.height]
+            });
+            pdf.addImage(imgData, 'PNG', 0, 0, canvas.width, canvas.height);
+            pdf.save('PlanWiz-Timetable.pdf');
+        } catch (err) {
+            console.error("PDF Export failed:", err);
+            alert("PDF Export failed.");
+        }
+    };
+
     return (
         <div className={`transition-all duration-300 ${isFullScreen ? 'fixed inset-0 z-[100] bg-black p-8 overflow-y-auto' : 'space-y-4'}`}>
             <div className="flex items-center justify-between mb-4">
                 <h2 className="text-xl font-bold text-gray-100 flex items-center">
-                    <span className="p-1.5 bg-indigo-500/20 rounded-lg mr-2 border border-indigo-500/30">
-                        <Clock className="w-5 h-5 text-indigo-400" />
-                    </span>
+                    <img
+                        src={logoImage}
+                        alt="PlanWiz"
+                        className="w-8 h-8 object-contain mr-3 filter drop-shadow-[0_0_8px_rgba(99,102,241,0.5)]"
+                    />
                     My Timetable
                 </h2>
-                <button
-                    onClick={() => setIsFullScreen(!isFullScreen)}
-                    className="p-2 bg-gray-800 hover:bg-gray-700 text-gray-400 hover:text-white rounded-lg transition-colors border border-gray-700"
-                    title={isFullScreen ? "Exit Full Screen" : "View Full Screen"}
-                >
-                    {isFullScreen ? <Minimize2 className="w-5 h-5" /> : <Maximize2 className="w-5 h-5" />}
-                </button>
+                <div className="flex items-center gap-2">
+                    {/* Export Buttons */}
+                    <div className="flex bg-gray-900/60 p-1 rounded-xl border border-gray-800 shadow-lg mr-2">
+                        <button
+                            onClick={handleExportImage}
+                            className="flex items-center gap-2 px-3 py-1.5 text-xs font-bold text-gray-300 hover:text-white hover:bg-gray-800 rounded-lg transition-all"
+                            title="Download as PNG"
+                        >
+                            <FileImage className="w-4 h-4 text-emerald-400" />
+                            <span className="hidden sm:inline">PNG</span>
+                        </button>
+                        <button
+                            onClick={handleExportPDF}
+                            className="flex items-center gap-2 px-3 py-1.5 text-xs font-bold text-gray-300 hover:text-white hover:bg-gray-800 rounded-lg transition-all"
+                            title="Download as PDF"
+                        >
+                            <FileText className="w-4 h-4 text-indigo-400" />
+                            <span className="hidden sm:inline">PDF</span>
+                        </button>
+                    </div>
+
+                    <button
+                        onClick={() => setIsFullScreen(!isFullScreen)}
+                        className="p-2 bg-gray-800 hover:bg-gray-700 text-gray-400 hover:text-white rounded-lg transition-colors border border-gray-700"
+                        title={isFullScreen ? "Exit Full Screen" : "View Full Screen"}
+                    >
+                        {isFullScreen ? <Minimize2 className="w-5 h-5" /> : <Maximize2 className="w-5 h-5" />}
+                    </button>
+                </div>
             </div>
 
-            <div className={`overflow-x-auto custom-scrollbar rounded-xl border border-gray-800 shadow-2xl ${isFullScreen ? 'h-[calc(100vh-120px)]' : ''}`}>
+            <div
+                ref={tableRef}
+                className={`overflow-x-auto custom-scrollbar rounded-xl border border-gray-800 shadow-2xl ${isFullScreen ? 'h-auto' : ''}`}
+            >
                 <table className="w-full border-collapse bg-gray-900 text-sm text-center">
                     <thead>
                         <tr>
@@ -104,11 +243,8 @@ const TimetableView = ({ timetable, ghostSubjects = [], allGhostData = null }) =
                                                     <span className="text-[10px] text-white/60 mt-1 italic">{bookedSlot.faculty}</span>
                                                 </div>
                                             );
-                                            // Generate consistent colors based on Subject Name hash or similar
-                                            // For now, use a default vibrant gradient
                                             cellClass = "bg-gradient-to-br from-indigo-600 to-indigo-700 border-indigo-500/50 hover:to-indigo-600 shadow-lg transform hover:scale-[1.02] transition-transform z-10 relative";
                                         } else if (ghosts && ghosts.length > 0) {
-                                            // Ghost Slot
                                             cellContent = (
                                                 <div className="flex flex-col gap-1 items-center justify-center h-full opacity-100">
                                                     {ghosts.map((g, idx) => (
@@ -120,7 +256,6 @@ const TimetableView = ({ timetable, ghostSubjects = [], allGhostData = null }) =
                                             );
                                             cellClass = "bg-gray-900/30 relative border-dashed border-emerald-500/30 hover:bg-emerald-900/10";
                                         } else {
-                                            // Empty
                                             cellContent = <span className="text-gray-800 text-xs select-none">.</span>;
                                             cellClass = "text-gray-800";
                                         }
@@ -137,7 +272,7 @@ const TimetableView = ({ timetable, ghostSubjects = [], allGhostData = null }) =
                     </tbody>
                 </table>
             </div>
-        </div>
+        </div >
     );
 };
 

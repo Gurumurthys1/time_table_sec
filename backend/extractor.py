@@ -175,9 +175,15 @@ def format_output(merged_rows):
 
 def extract_courses(file_bytes):
     """
-    Main entry point for API.
+    Main entry point for API (File Upload).
     """
     text = extract_text_from_bytes(file_bytes)
+    return extract_courses_from_text(text)
+
+def extract_courses_from_text(text):
+    """
+    Main entry point for API (Text Paste).
+    """
     raw_rows = parse_pdf_text(text)
     merged = merge_slots(raw_rows)
     return format_output(merged)

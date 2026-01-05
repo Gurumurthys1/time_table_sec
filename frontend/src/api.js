@@ -15,6 +15,11 @@ export const uploadPDF = async (file) => {
     return response.data;
 };
 
+export const uploadText = async (text) => {
+    const response = await api.post('/upload-text', { text });
+    return response.data;
+};
+
 export const generateTimetable = async (preferences) => {
     const response = await api.post('/generate', preferences);
     return response.data;

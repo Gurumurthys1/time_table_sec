@@ -1,5 +1,6 @@
 import React from 'react';
 import { Calendar, Wand2 } from 'lucide-react';
+import logoImage from '../assets/logo.png';
 
 const PreferencePanel = ({ leaveDay, setLeaveDay, onGenerate }) => {
     const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"];
@@ -8,9 +9,13 @@ const PreferencePanel = ({ leaveDay, setLeaveDay, onGenerate }) => {
         <div className="space-y-8 animate-fade-in delay-100">
 
             {/* Leave Day Preference */}
-            <div className="bg-gray-800/40 p-5 rounded-xl border border-gray-800 hover:border-violet-500/30 transition-colors">
+            <div className="bg-gray-800/40 p-5 rounded-xl border border-gray-800 hover:border-indigo-500/30 transition-colors">
                 <label className="text-xs font-bold text-gray-400 uppercase tracking-widest flex items-center mb-3">
-                    <Calendar className="w-4 h-4 mr-2 text-violet-400" />
+                    <img
+                        src={logoImage}
+                        alt="PlanWiz"
+                        className="w-5 h-5 object-contain mr-2 filter drop-shadow-[0_0_8px_rgba(99,102,241,0.5)]"
+                    />
                     Leave Day Preference
                 </label>
 
