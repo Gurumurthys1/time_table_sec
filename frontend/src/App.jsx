@@ -178,7 +178,7 @@ function App() {
           </div>
           <h1 className={`text-5xl font-extrabold tracking-tight mb-4 drop-shadow-lg ${isDarkMode ? 'text-white' : 'text-gray-900'
             }`}>
-            Plan<span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-violet-400">Wiz</span>
+            Plan<span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-violet-400">Wizz</span>
           </h1>
           <p className={`text-xl font-medium max-w-md mx-auto leading-relaxed ${isDarkMode ? 'text-gray-400' : 'text-gray-600'
             }`}>
