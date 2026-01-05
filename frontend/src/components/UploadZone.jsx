@@ -77,8 +77,8 @@ const UploadZone = ({ onUploadSuccess }) => {
                 <button
                     onClick={() => setMode('upload')}
                     className={`flex items-center gap-2 px-6 py-2 rounded-xl text-sm font-bold transition-all ${mode === 'upload'
-                            ? 'bg-indigo-600 text-white shadow-[0_0_15px_rgba(99,102,241,0.4)]'
-                            : 'text-gray-500 hover:text-gray-300'
+                        ? 'bg-indigo-600 text-white shadow-[0_0_15px_rgba(99,102,241,0.4)]'
+                        : 'text-gray-500 hover:text-gray-300'
                         }`}
                 >
                     <Upload className="w-4 h-4" />
@@ -87,8 +87,8 @@ const UploadZone = ({ onUploadSuccess }) => {
                 <button
                     onClick={() => setMode('paste')}
                     className={`flex items-center gap-2 px-6 py-2 rounded-xl text-sm font-bold transition-all ${mode === 'paste'
-                            ? 'bg-indigo-600 text-white shadow-[0_0_15px_rgba(99,102,241,0.4)]'
-                            : 'text-gray-500 hover:text-gray-300'
+                        ? 'bg-indigo-600 text-white shadow-[0_0_15px_rgba(99,102,241,0.4)]'
+                        : 'text-gray-500 hover:text-gray-300'
                         }`}
                 >
                     <Clipboard className="w-4 h-4" />
@@ -97,44 +97,59 @@ const UploadZone = ({ onUploadSuccess }) => {
             </div>
 
             {mode === 'upload' ? (
-                <div
-                    onDragOver={handleDragOver}
-                    onDragLeave={handleDragLeave}
-                    onDrop={handleDrop}
-                    className={`
+                <div className="space-y-4 animate-fade-in">
+                    <div
+                        onDragOver={handleDragOver}
+                        onDragLeave={handleDragLeave}
+                        onDrop={handleDrop}
+                        className={`
                         relative group cursor-pointer
                         border-2 border-dashed rounded-3xl p-10 text-center transition-all duration-300
                         ${isDragging
-                            ? 'border-indigo-500 bg-indigo-900/20 scale-[1.02]'
-                            : 'border-gray-700 hover:border-indigo-500/50 hover:bg-gray-900/40 bg-gray-900/20'
-                        }
+                                ? 'border-indigo-500 bg-indigo-900/20 scale-[1.02]'
+                                : 'border-gray-700 hover:border-indigo-500/50 hover:bg-gray-900/40 bg-gray-900/20'
+                            }
                     `}
-                >
-                    <input
-                        type="file"
-                        onChange={handleFileSelect}
-                        accept=".pdf"
-                        className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                    />
+                    >
+                        <input
+                            type="file"
+                            onChange={handleFileSelect}
+                            accept=".pdf"
+                            className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                        />
 
-                    <div className="flex flex-col items-center justify-center space-y-4">
-                        <div className={`
+                        <div className="flex flex-col items-center justify-center space-y-4">
+                            <div className={`
                             p-4 rounded-full transition-all duration-500
                             ${isLoading ? 'bg-indigo-500/20 animate-pulse' : 'bg-gray-800 group-hover:bg-indigo-900/30'}
                         `}>
-                            {isLoading ? (
-                                <div className="w-8 h-8 border-2 border-indigo-400 border-t-transparent rounded-full animate-spin" />
-                            ) : (
-                                <Upload className="w-8 h-8 text-indigo-400 group-hover:scale-110 transition-transform" />
-                            )}
-                        </div>
+                                {isLoading ? (
+                                    <div className="w-8 h-8 border-2 border-indigo-400 border-t-transparent rounded-full animate-spin" />
+                                ) : (
+                                    <Upload className="w-8 h-8 text-indigo-400 group-hover:scale-110 transition-transform" />
+                                )}
+                            </div>
 
-                        <div className="space-y-1">
-                            <p className="text-lg font-medium text-gray-200">
-                                {isLoading ? "Analyzing PDF..." : "Drop your Enrollment PDF here"}
-                            </p>
-                            <p className="text-sm text-gray-500">or click to browse</p>
+                            <div className="space-y-1">
+                                <p className="text-lg font-medium text-gray-200">
+                                    {isLoading ? "Analyzing PDF..." : "Drop your Enrollment PDF here"}
+                                </p>
+                                <p className="text-sm text-gray-500">or click to browse</p>
+                            </div>
                         </div>
+                    </div>
+
+                    {/* Instruction Note */}
+                    <div className="bg-yellow-900/20 border border-yellow-500/20 rounded-xl p-4 text-center">
+                        <p className="text-yellow-400 text-sm font-bold flex items-center justify-center gap-2">
+                            <AlertCircle className="w-4 h-4" />
+                            Mandatory Requirement
+                        </p>
+                        <p className="text-yellow-200/70 text-xs mt-1 leading-relaxed">
+                            The PDF must be in <strong>text format</strong> (selectable), not an image scan.
+                            <br />
+                            Before printing or downloading, please copy the text content if needed.
+                        </p>
                     </div>
                 </div>
             ) : (
