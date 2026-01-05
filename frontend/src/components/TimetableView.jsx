@@ -1,13 +1,13 @@
-import React from 'react';
-import { Clock } from 'lucide-react';
+import React, { useState } from 'react';
+import { Clock, Maximize2, Minimize2 } from 'lucide-react';
 
 const TimetableView = ({ timetable, ghostSubjects = [], allGhostData = null }) => {
+    const [isFullScreen, setIsFullScreen] = useState(false);
     const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"];
     const times = [
         "08:00 - 09:00", "09:00 - 10:00", "10:00 - 11:00",
         "11:00 - 12:00", "12:00 - 13:00", "13:00 - 14:00",
         "14:00 - 15:00", "15:00 - 16:00", "16:00 - 17:00",
-        "17:00 - 18:00", "18:00 - 19:00"
     ];
 
     // Helper to format time strings for comparison
@@ -44,15 +44,24 @@ const TimetableView = ({ timetable, ghostSubjects = [], allGhostData = null }) =
     }
 
     return (
-        <div className="space-y-4">
-            <h2 className="text-xl font-bold text-gray-100 flex items-center">
-                <span className="p-1.5 bg-indigo-500/20 rounded-lg mr-2 border border-indigo-500/30">
-                    <Clock className="w-5 h-5 text-indigo-400" />
-                </span>
-                My Timetable
-            </h2>
+        <div className={`transition-all duration-300 ${isFullScreen ? 'fixed inset-0 z-[100] bg-black p-8 overflow-y-auto' : 'space-y-4'}`}>
+            <div className="flex items-center justify-between mb-4">
+                <h2 className="text-xl font-bold text-gray-100 flex items-center">
+                    <span className="p-1.5 bg-indigo-500/20 rounded-lg mr-2 border border-indigo-500/30">
+                        <Clock className="w-5 h-5 text-indigo-400" />
+                    </span>
+                    My Timetable
+                </h2>
+                <button
+                    onClick={() => setIsFullScreen(!isFullScreen)}
+                    className="p-2 bg-gray-800 hover:bg-gray-700 text-gray-400 hover:text-white rounded-lg transition-colors border border-gray-700"
+                    title={isFullScreen ? "Exit Full Screen" : "View Full Screen"}
+                >
+                    {isFullScreen ? <Minimize2 className="w-5 h-5" /> : <Maximize2 className="w-5 h-5" />}
+                </button>
+            </div>
 
-            <div className="overflow-x-auto custom-scrollbar rounded-xl border border-gray-800 shadow-2xl">
+            <div className={`overflow-x-auto custom-scrollbar rounded-xl border border-gray-800 shadow-2xl ${isFullScreen ? 'h-[calc(100vh-120px)]' : ''}`}>
                 <table className="w-full border-collapse bg-gray-900 text-sm text-center">
                     <thead>
                         <tr>
