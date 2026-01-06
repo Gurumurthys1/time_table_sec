@@ -7,7 +7,7 @@ import { jsPDF } from 'jspdf';
 const TimetableView = ({ timetable, ghostSubjects = [], allGhostData = null }) => {
     const [isFullScreen, setIsFullScreen] = useState(false);
     const tableRef = useRef(null);
-    const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"];
+    const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
     const times = [
         "08:00 - 09:00", "09:00 - 10:00", "10:00 - 11:00",
         "11:00 - 12:00", "12:00 - 13:00", "13:00 - 14:00",
@@ -158,7 +158,7 @@ const TimetableView = ({ timetable, ghostSubjects = [], allGhostData = null }) =
     return (
         <div className={`transition-all duration-300 ${isFullScreen ? 'fixed inset-0 z-[100] bg-black p-8 overflow-y-auto' : 'space-y-4'}`}>
             <div className="flex items-center justify-between mb-4">
-                <h2 className="text-xl font-bold text-gray-100 flex items-center">
+                <h2 className="text-xl font-bold text-gray-800 dark:text-gray-100 flex items-center">
                     <img
                         src={logoImage}
                         alt="PlanWizz"
@@ -199,18 +199,18 @@ const TimetableView = ({ timetable, ghostSubjects = [], allGhostData = null }) =
 
             <div
                 ref={tableRef}
-                className={`overflow-x-auto custom-scrollbar rounded-xl border border-gray-800 shadow-2xl ${isFullScreen ? 'h-auto' : ''}`}
+                className={`overflow-x-auto custom-scrollbar rounded-xl border border-gray-200 dark:border-gray-800 shadow-2xl ${isFullScreen ? 'h-auto' : ''}`}
             >
-                <table className="w-full border-collapse bg-gray-900 text-sm text-center">
+                <table className="w-full border-collapse bg-white dark:bg-gray-900 text-sm text-center">
                     <thead>
                         <tr>
-                            <th className="p-4 border-b border-gray-800 bg-gray-950/50 text-gray-400 font-bold sticky left-0 z-10 w-32 border-r">
+                            <th className="p-4 border-b border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-950/50 text-gray-500 dark:text-gray-400 font-bold sticky left-0 z-10 w-32 border-r border-gray-200 dark:border-gray-800">
                                 <div className="flex items-center justify-center gap-2">
                                     <Clock className="w-4 h-4" /> Time
                                 </div>
                             </th>
                             {days.map(day => (
-                                <th key={day} className="p-4 border-b border-gray-800 bg-gray-950/50 text-indigo-300 font-bold tracking-wider uppercase text-xs">
+                                <th key={day} className="p-4 border-b border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-950/50 text-indigo-600 dark:text-indigo-300 font-bold tracking-wider uppercase text-xs">
                                     {day}
                                 </th>
                             ))}
@@ -220,8 +220,8 @@ const TimetableView = ({ timetable, ghostSubjects = [], allGhostData = null }) =
                         {times.map((time, index) => {
                             const timeKey = parseTime(time);
                             return (
-                                <tr key={index} className="hover:bg-gray-800/30 transition-colors">
-                                    <td className="p-3 border-r border-b border-gray-800 font-mono text-gray-500 text-xs bg-gray-950/30 font-medium">
+                                <tr key={index} className="hover:bg-gray-50 dark:hover:bg-gray-800/30 transition-colors">
+                                    <td className="p-3 border-r border-b border-gray-200 dark:border-gray-800 font-mono text-gray-500 dark:text-gray-500 text-xs bg-gray-50 dark:bg-gray-950/30 font-medium">
                                         {time}
                                     </td>
                                     {days.map(day => {
@@ -243,25 +243,25 @@ const TimetableView = ({ timetable, ghostSubjects = [], allGhostData = null }) =
                                                     <span className="text-[10px] text-white/60 mt-1 italic">{bookedSlot.faculty}</span>
                                                 </div>
                                             );
-                                            cellClass = "bg-gradient-to-br from-indigo-600 to-indigo-700 border-indigo-500/50 hover:to-indigo-600 shadow-lg transform hover:scale-[1.02] transition-transform z-10 relative";
+                                            cellClass = "bg-gradient-to-br from-indigo-500 to-indigo-600 dark:from-indigo-600 dark:to-indigo-700 border-indigo-500/50 hover:to-indigo-500 dark:hover:to-indigo-600 shadow-lg transform hover:scale-[1.02] transition-transform z-10 relative";
                                         } else if (ghosts && ghosts.length > 0) {
                                             cellContent = (
                                                 <div className="flex flex-col gap-1 items-center justify-center h-full opacity-100">
                                                     {ghosts.map((g, idx) => (
-                                                        <span key={idx} className="text-xs font-bold text-emerald-300 bg-emerald-900/40 px-2 py-1 rounded border border-emerald-500/30 animate-pulse">
+                                                        <span key={idx} className="text-xs font-bold text-emerald-600 dark:text-emerald-300 bg-emerald-100 dark:bg-emerald-900/40 px-2 py-1 rounded border border-emerald-500/30">
                                                             {g.subject}
                                                         </span>
                                                     ))}
                                                 </div>
                                             );
-                                            cellClass = "bg-gray-900/30 relative border-dashed border-emerald-500/30 hover:bg-emerald-900/10";
+                                            cellClass = "bg-gray-50 dark:bg-gray-900/30 relative border-dashed border-emerald-500/30 hover:bg-emerald-50 dark:hover:bg-emerald-900/10";
                                         } else {
-                                            cellContent = <span className="text-gray-800 text-xs select-none">.</span>;
-                                            cellClass = "text-gray-800";
+                                            cellContent = <span className="text-gray-300 dark:text-gray-800 text-xs select-none">.</span>;
+                                            cellClass = "text-gray-300 dark:text-gray-800";
                                         }
 
                                         return (
-                                            <td key={day} className={`border-b border-r border-gray-800 h-24 p-1 relative group ${cellClass}`}>
+                                            <td key={day} className={`border-b border-r border-gray-200 dark:border-gray-800 h-24 p-1 relative group ${cellClass}`}>
                                                 {cellContent}
                                             </td>
                                         );

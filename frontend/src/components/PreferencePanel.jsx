@@ -3,14 +3,14 @@ import { Calendar, Wand2 } from 'lucide-react';
 import logoImage from '../assets/logo.png';
 
 const PreferencePanel = ({ leaveDay, setLeaveDay, onGenerate }) => {
-    const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"];
+    const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 
     return (
         <div className="space-y-8 animate-fade-in delay-100">
 
             {/* Leave Day Preference */}
-            <div className="bg-gray-800/40 p-5 rounded-xl border border-gray-800 hover:border-indigo-500/30 transition-colors">
-                <label className="text-xs font-bold text-gray-400 uppercase tracking-widest flex items-center mb-3">
+            <div className="bg-white dark:bg-gray-800/40 p-5 rounded-xl border border-gray-200 dark:border-gray-800 hover:border-indigo-500/30 transition-colors shadow-sm dark:shadow-none">
+                <label className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-widest flex items-center mb-3">
                     <img
                         src={logoImage}
                         alt="PlanWizz"
@@ -21,13 +21,13 @@ const PreferencePanel = ({ leaveDay, setLeaveDay, onGenerate }) => {
 
                 <div className="relative">
                     <select
-                        className="w-full p-3 pl-4 text-sm text-gray-200 border border-gray-700 rounded-lg bg-gray-900 focus:outline-none focus:border-violet-500 focus:ring-1 focus:ring-violet-500/50 appearance-none transition-all shadow-am"
+                        className="w-full p-3 pl-4 text-sm text-gray-900 dark:text-gray-200 border border-gray-300 dark:border-gray-700 rounded-lg bg-gray-50 dark:bg-gray-900 focus:outline-none focus:border-violet-500 focus:ring-1 focus:ring-violet-500/50 appearance-none transition-all shadow-sm"
                         value={leaveDay}
                         onChange={(e) => setLeaveDay(e.target.value)}
                     >
-                        <option value="" className="bg-gray-900">None (Maximize Study)</option>
+                        <option value="" className="bg-white dark:bg-gray-900">None (Maximize Study)</option>
                         {days.map(day => (
-                            <option key={day} value={day} className="bg-gray-900">{day}</option>
+                            <option key={day} value={day} className="bg-white dark:bg-gray-900">{day}</option>
                         ))}
                     </select>
                     <div className="absolute inset-y-0 right-0 flex items-center px-4 pointer-events-none text-gray-500">
@@ -35,7 +35,7 @@ const PreferencePanel = ({ leaveDay, setLeaveDay, onGenerate }) => {
                     </div>
                 </div>
 
-                <p className="text-xs text-gray-500 mt-2 pl-1">
+                <p className="text-xs text-gray-500 dark:text-gray-500 mt-2 pl-1">
                     {leaveDay ? `PlanWizz will attempt to keep ${leaveDay}s free.` : "No specific day off requested."}
                 </p>
             </div>

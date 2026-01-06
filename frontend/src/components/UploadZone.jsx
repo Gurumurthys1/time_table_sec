@@ -73,12 +73,12 @@ const UploadZone = ({ onUploadSuccess }) => {
     return (
         <div className="w-full space-y-6">
             {/* Mode Switcher */}
-            <div className="flex justify-center p-1 bg-gray-900/60 backdrop-blur-sm border border-gray-800 rounded-2xl w-fit mx-auto shadow-xl">
+            <div className="flex justify-center p-1 bg-white dark:bg-gray-900/60 backdrop-blur-sm border border-gray-200 dark:border-gray-800 rounded-2xl w-fit mx-auto shadow-xl">
                 <button
                     onClick={() => setMode('upload')}
                     className={`flex items-center gap-2 px-6 py-2 rounded-xl text-sm font-bold transition-all ${mode === 'upload'
                         ? 'bg-indigo-600 text-white shadow-[0_0_15px_rgba(99,102,241,0.4)]'
-                        : 'text-gray-500 hover:text-gray-300'
+                        : 'text-gray-500 hover:text-gray-700 dark:hover:text-gray-300'
                         }`}
                 >
                     <Upload className="w-4 h-4" />
@@ -88,7 +88,7 @@ const UploadZone = ({ onUploadSuccess }) => {
                     onClick={() => setMode('paste')}
                     className={`flex items-center gap-2 px-6 py-2 rounded-xl text-sm font-bold transition-all ${mode === 'paste'
                         ? 'bg-indigo-600 text-white shadow-[0_0_15px_rgba(99,102,241,0.4)]'
-                        : 'text-gray-500 hover:text-gray-300'
+                        : 'text-gray-500 hover:text-gray-700 dark:hover:text-gray-300'
                         }`}
                 >
                     <Clipboard className="w-4 h-4" />
@@ -106,8 +106,8 @@ const UploadZone = ({ onUploadSuccess }) => {
                         relative group cursor-pointer
                         border-2 border-dashed rounded-3xl p-10 text-center transition-all duration-300
                         ${isDragging
-                                ? 'border-indigo-500 bg-indigo-900/20 scale-[1.02]'
-                                : 'border-gray-700 hover:border-indigo-500/50 hover:bg-gray-900/40 bg-gray-900/20'
+                                ? 'border-indigo-500 bg-indigo-50 dark:bg-indigo-900/20 scale-[1.02]'
+                                : 'border-gray-200 dark:border-gray-700 hover:border-indigo-500/50 hover:bg-gray-50 dark:hover:bg-gray-900/40 bg-white dark:bg-gray-900/20'
                             }
                     `}
                     >
@@ -121,31 +121,31 @@ const UploadZone = ({ onUploadSuccess }) => {
                         <div className="flex flex-col items-center justify-center space-y-4">
                             <div className={`
                             p-4 rounded-full transition-all duration-500
-                            ${isLoading ? 'bg-indigo-500/20 animate-pulse' : 'bg-gray-800 group-hover:bg-indigo-900/30'}
+                            ${isLoading ? 'bg-indigo-100 dark:bg-indigo-500/20 animate-pulse' : 'bg-gray-100 dark:bg-gray-800 group-hover:bg-indigo-50 dark:group-hover:bg-indigo-900/30'}
                         `}>
                                 {isLoading ? (
                                     <div className="w-8 h-8 border-2 border-indigo-400 border-t-transparent rounded-full animate-spin" />
                                 ) : (
-                                    <Upload className="w-8 h-8 text-indigo-400 group-hover:scale-110 transition-transform" />
+                                    <Upload className="w-8 h-8 text-indigo-500 dark:text-indigo-400 group-hover:scale-110 transition-transform" />
                                 )}
                             </div>
 
                             <div className="space-y-1">
-                                <p className="text-lg font-medium text-gray-200">
+                                <p className="text-lg font-medium text-gray-700 dark:text-gray-200">
                                     {isLoading ? "Analyzing PDF..." : "Drop your Enrollment PDF here"}
                                 </p>
-                                <p className="text-sm text-gray-500">or click to browse</p>
+                                <p className="text-sm text-gray-600 dark:text-gray-500">or click to browse</p>
                             </div>
                         </div>
                     </div>
 
                     {/* Instruction Note */}
-                    <div className="bg-yellow-900/20 border border-yellow-500/20 rounded-xl p-4 text-center">
-                        <p className="text-yellow-400 text-sm font-bold flex items-center justify-center gap-2">
+                    <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-500/20 rounded-xl p-4 text-center">
+                        <p className="text-yellow-700 dark:text-yellow-400 text-sm font-bold flex items-center justify-center gap-2">
                             <AlertCircle className="w-4 h-4" />
                             Mandatory Requirement
                         </p>
-                        <p className="text-yellow-200/70 text-xs mt-1 leading-relaxed">
+                        <p className="text-yellow-600 dark:text-yellow-200/70 text-xs mt-1 leading-relaxed">
                             The PDF must be in <strong>text format</strong> (selectable), not an image scan.
                             <br />
                             Before printing or downloading, please copy the text content if needed.
@@ -159,7 +159,7 @@ const UploadZone = ({ onUploadSuccess }) => {
                             value={pastedText}
                             onChange={(e) => setPastedText(e.target.value)}
                             placeholder="Copy all text from your enrollment PDF and paste it here..."
-                            className="w-full h-48 p-6 bg-gray-900/40 border-2 border-gray-800 rounded-3xl text-gray-200 placeholder-gray-600 focus:outline-none focus:border-indigo-500/50 focus:ring-1 focus:ring-indigo-500/30 transition-all custom-scrollbar resize-none text-sm leading-relaxed"
+                            className="w-full h-48 p-6 bg-white dark:bg-gray-900/40 border-2 border-gray-200 dark:border-gray-800 rounded-3xl text-gray-800 dark:text-gray-200 placeholder-gray-400 dark:placeholder-gray-600 focus:outline-none focus:border-indigo-500/50 focus:ring-1 focus:ring-indigo-500/30 transition-all custom-scrollbar resize-none text-sm leading-relaxed"
                         />
                         {pastedText && (
                             <button
@@ -178,7 +178,7 @@ const UploadZone = ({ onUploadSuccess }) => {
                         className={`
                             w-full py-4 rounded-2xl font-bold flex items-center justify-center gap-2 transition-all shadow-xl
                             ${isLoading || !pastedText.trim()
-                                ? 'bg-gray-800 text-gray-500 cursor-not-allowed'
+                                ? 'bg-gray-200 dark:bg-gray-800 text-gray-400 dark:text-gray-500 cursor-not-allowed'
                                 : 'bg-gradient-to-r from-indigo-600 to-violet-600 text-white hover:scale-[1.02] shadow-[0_0_20px_rgba(99,102,241,0.3)]'
                             }
                         `}
@@ -190,7 +190,7 @@ const UploadZone = ({ onUploadSuccess }) => {
                         )}
                         {isLoading ? "Analyzing Text..." : "Process Text Data"}
                     </button>
-                    <p className="text-center text-xs text-gray-600">
+                    <p className="text-center text-xs text-gray-600 dark:text-gray-600">
                         Tip: Ctrl+A in your PDF, then Ctrl+C and Paste here.
                     </p>
                 </div>

@@ -147,7 +147,7 @@ function App() {
   if (!courses) {
     return (
       <div className={`min-h-screen flex flex-col justify-center items-center font-sans p-6 relative overflow-hidden transition-colors duration-300 ${isDarkMode
-        ? 'bg-black bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-gray-900 via-black to-black text-gray-100'
+        ? 'dark bg-black bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-gray-900 via-black to-black text-gray-100'
         : 'bg-gradient-to-br from-blue-50 via-white to-purple-50 text-gray-900'
         }`}>
         {/* Theme Toggle - Landing Page */}
@@ -192,35 +192,37 @@ function App() {
 
         <footer className="mt-20 text-center space-y-4 relative z-10">
           <div className="flex items-center justify-center gap-6 mb-3">
-            <span className="text-gray-500 text-sm font-medium">Developed by</span>
+            <span className="text-gray-600 dark:text-gray-500 text-sm font-medium">Developed by</span>
             <a
               href="https://www.linkedin.com/in/gurumurthys/"
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center gap-2 px-4 py-2 bg-gray-900/50 hover:bg-indigo-900/30 border border-gray-800 hover:border-indigo-500/50 rounded-lg transition-all group"
+              className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-gray-900/50 hover:bg-gray-50 dark:hover:bg-indigo-900/30 border border-gray-200 dark:border-gray-800 hover:border-indigo-400 dark:hover:border-indigo-500/50 rounded-lg transition-all group shadow-sm dark:shadow-none"
             >
-              <Linkedin className="w-4 h-4 text-indigo-400 group-hover:text-indigo-300" />
-              <span className="text-gray-400 group-hover:text-gray-200 text-sm font-medium">Gurumurthy S</span>
+              <Linkedin className="w-4 h-4 text-indigo-500 dark:text-indigo-400 group-hover:text-indigo-600 dark:group-hover:text-indigo-300" />
+              <span className="text-gray-600 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-gray-200 text-sm font-medium">Gurumurthy S</span>
             </a>
             <a
               href="https://www.linkedin.com/in/dharshan2006"
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center gap-2 px-4 py-2 bg-gray-900/50 hover:bg-indigo-900/30 border border-gray-800 hover:border-indigo-500/50 rounded-lg transition-all group"
+              className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-gray-900/50 hover:bg-gray-50 dark:hover:bg-indigo-900/30 border border-gray-200 dark:border-gray-800 hover:border-indigo-400 dark:hover:border-indigo-500/50 rounded-lg transition-all group shadow-sm dark:shadow-none"
             >
-              <Linkedin className="w-4 h-4 text-indigo-400 group-hover:text-indigo-300" />
-              <span className="text-gray-400 group-hover:text-gray-200 text-sm font-medium">Dharshan D</span>
+              <Linkedin className="w-4 h-4 text-indigo-500 dark:text-indigo-400 group-hover:text-indigo-600 dark:group-hover:text-indigo-300" />
+              <span className="text-gray-600 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-gray-200 text-sm font-medium">Dharshan D</span>
             </a>
           </div>
-          <p className="text-gray-600 text-sm">© 2026 PlanWizz. Intelligent Scheduling.</p>
+          <p className="text-gray-600 dark:text-gray-600 text-sm">© 2026 PlanWizz. Intelligent Scheduling.</p>
         </footer>
       </div>
     );
   }
 
-  // View 2: Dashboard (Top-Bottom Layout)
   return (
-    <div className="min-h-screen bg-black bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-gray-900 via-black to-black flex flex-col font-sans text-gray-100">
+    <div className={`min-h-screen flex flex-col font-sans transition-colors duration-300 ${isDarkMode
+      ? 'dark bg-black bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-gray-900 via-black to-black text-gray-100'
+      : 'bg-white bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-indigo-50/30 via-white to-white text-gray-900'
+      }`}>
 
       {/* Header */}
       <header className="sticky top-0 z-50 transition-all duration-300">
@@ -245,16 +247,6 @@ function App() {
             </div>
           </div>
           <div className="flex items-center gap-3">
-            <button
-              onClick={() => setIsDarkMode(!isDarkMode)}
-              className={`p-2 rounded-lg transition-all ${isDarkMode
-                ? 'text-gray-400 hover:text-white hover:bg-white/5'
-                : 'text-gray-600 hover:text-purple-600 hover:bg-purple-50'
-                }`}
-              title={isDarkMode ? 'Light Mode' : 'Dark Mode'}
-            >
-              <Lamp className={`w-5 h-5 transition-transform ${!isDarkMode ? 'rotate-12' : ''}`} />
-            </button>
             <button
               onClick={() => setShowUserPopup(!showUserPopup)}
               className={`p-2 rounded-lg transition-all ${isDarkMode
@@ -391,17 +383,17 @@ function App() {
             {/* Empty State Instructions */}
             {!generatedTimetable && status !== 'loading' && status !== 'conflict' && status !== 'error' && (
               <div className="py-32 text-center">
-                <span className="inline-block p-4 rounded-full bg-gray-800/50 mb-4 text-gray-600">
-                  <Layers className="w-8 h-8 opacity-50" />
+                <span className="inline-block p-4 rounded-full bg-gray-100 dark:bg-gray-800/50 mb-4 text-gray-400 dark:text-gray-600">
+                  <Layers className="w-8 h-8 opacity-50 text-gray-600 dark:text-gray-400" />
                 </span>
-                <p className="text-gray-500 font-medium text-lg">Select subjects below to begin.</p>
-                <p className="text-gray-600 text-sm mt-2">Your optimized schedule will appear here.</p>
+                <p className="text-gray-600 dark:text-gray-500 font-medium text-lg">Select subjects below to begin.</p>
+                <p className="text-gray-500 dark:text-gray-600 text-sm mt-2">Your optimized schedule will appear here.</p>
               </div>
             )}
 
             {/* Interactive Ghost Mode Header */}
             {(generatedTimetable || ghostData) && (
-              <div className="px-6 pt-4 pb-2 border-b border-gray-800 flex flex-wrap items-center gap-3 bg-black/20">
+              <div className="px-6 pt-4 pb-2 border-b border-gray-200 dark:border-gray-800 flex flex-wrap items-center gap-3 bg-gray-50/50 dark:bg-black/20">
                 <span className="text-xs font-bold text-gray-500 uppercase tracking-widest">Interactive Mode:</span>
                 {ghostData && Object.keys(ghostData).map(subj => (
                   <button
@@ -409,14 +401,14 @@ function App() {
                     onClick={() => handleGhostClick(subj)}
                     className={`px-3 py-1 rounded text-xs font-bold transition-all border ${activeGhostSubjects.includes(subj)
                       ? 'bg-indigo-600 text-white border-indigo-500 shadow-[0_0_10px_rgba(99,102,241,0.4)]'
-                      : 'bg-gray-800 text-gray-400 border-gray-700 hover:border-gray-500 hover:text-gray-200'
+                      : 'bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-400 border-gray-300 dark:border-gray-700 hover:border-gray-400 dark:hover:border-gray-500 hover:text-gray-900 dark:hover:text-gray-200'
                       }`}
                   >
                     {subj}
                   </button>
                 ))}
                 {activeGhostSubjects.length > 0 && (
-                  <button onClick={() => setActiveGhostSubjects([])} className="text-xs text-red-400 hover:text-red-300 font-medium ml-2 transition-colors">Clear</button>
+                  <button onClick={() => setActiveGhostSubjects([])} className="text-xs text-red-500 hover:text-red-600 dark:text-red-400 dark:hover:text-red-300 font-medium ml-2 transition-colors">Clear</button>
                 )}
               </div>
             )}
@@ -477,8 +469,8 @@ function App() {
           <div className="flex flex-col md:flex-row gap-8 items-start relative z-10">
             {/* Subject Selection */}
             <div className="flex-1 w-full">
-              <h2 className="text-lg font-bold text-gray-100 mb-6 flex items-center border-b border-gray-800 pb-4">
-                <span className="bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 w-7 h-7 rounded-lg flex items-center justify-center text-xs mr-3 shadow-[0_0_10px_rgba(99,102,241,0.2)]">1</span>
+              <h2 className="text-lg font-bold text-gray-900 dark:text-gray-100 mb-6 flex items-center border-b border-gray-200 dark:border-gray-800 pb-4">
+                <span className="bg-indigo-500/20 text-indigo-600 dark:text-indigo-300 border border-indigo-500/30 w-7 h-7 rounded-lg flex items-center justify-center text-xs mr-3 shadow-[0_0_10px_rgba(99,102,241,0.2)]">1</span>
                 Select Subjects & Staff
               </h2>
               <div className="max-h-[450px] overflow-y-auto pr-2 custom-scrollbar">
@@ -494,9 +486,9 @@ function App() {
             </div>
 
             {/* Preferences & Generate */}
-            <div className="w-full md:w-1/3 border-l-0 md:border-l border-gray-800 pl-0 md:pl-8 pt-6 md:pt-0 border-t md:border-t-0">
-              <h2 className="text-lg font-bold text-gray-100 mb-6 flex items-center border-b border-gray-800 pb-4">
-                <span className="bg-violet-500/20 text-violet-300 border border-violet-500/30 w-7 h-7 rounded-lg flex items-center justify-center text-xs mr-3 shadow-[0_0_10px_rgba(139,92,246,0.2)]">2</span>
+            <div className="w-full md:w-1/3 border-l-0 md:border-l border-gray-200 dark:border-gray-800 pl-0 md:pl-8 pt-6 md:pt-0 border-t md:border-t-0 border-gray-200 dark:border-gray-800 md:border-l-gray-200 dark:md:border-l-gray-800">
+              <h2 className="text-lg font-bold text-gray-900 dark:text-gray-100 mb-6 flex items-center border-b border-gray-200 dark:border-gray-800 pb-4">
+                <span className="bg-violet-500/20 text-violet-600 dark:text-violet-300 border border-violet-500/30 w-7 h-7 rounded-lg flex items-center justify-center text-xs mr-3 shadow-[0_0_10px_rgba(139,92,246,0.2)]">2</span>
                 Preferences
               </h2>
               <PreferencePanel
@@ -511,7 +503,7 @@ function App() {
       </main>
 
       {/* Dashboard Footer */}
-      <footer className="w-full py-8 border-t border-gray-800 bg-black/40 backdrop-blur-sm mt-auto">
+      <footer className="w-full py-8 border-t border-gray-200 dark:border-gray-800 bg-white/60 dark:bg-black/40 backdrop-blur-sm mt-auto">
         <div className="max-w-6xl mx-auto px-6 flex flex-col md:flex-row items-center justify-between gap-6">
           <div className="flex items-center gap-3 opacity-80 hover:opacity-100 transition-all cursor-default group">
             <img
