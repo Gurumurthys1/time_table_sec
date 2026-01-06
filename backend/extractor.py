@@ -10,9 +10,13 @@ COURSE_HEADER = re.compile(r"^(\d{2}[A-Z]{2}\d{3})\s*\[(\d+)\s*Credits\]")
 DOMAIN_PATTERN = re.compile(
     r"(PROFESSIONAL CORE|PROFESSIONAL ELECTIVE|OPEN ELECTIVE|ENGINEERING SCIENCES|HUMANITIES AND SCIENCES)"
 )
-SLOT_FACULTY_PATTERN = re.compile(r"^UG\s*-\s*\d+,\s*([A-Z0-9\-]+),\s*[A-Z]+\s*-\s*(.+)")
+# New format: UG - 04, T1-B13, MECH - MUTHUKUMAR V
+SLOT_FACULTY_PATTERN_NEW = re.compile(r"^UG\s*-\s*\d+,\s*([A-Z0-9\-]+),\s*[A-Z]+\s*-\s*(.+)")
+# Old format: T1-B13, MUTHUKUMAR V
+SLOT_FACULTY_PATTERN_OLD = re.compile(r"^([A-Z0-9\-]+),\s*(.+)")
 DAY_PATTERN = re.compile(r"^(Monday|Tuesday|Wednesday|Thursday|Friday|Saturday):")
 TIME_PAIR_PATTERN = re.compile(r"(\d{2}:\d{2})\s*-\s*(\d{2}:\d{2})")
+
 
 VALID_START = time(8, 0)
 VALID_END = time(17, 0)
@@ -96,7 +100,17 @@ def parse_pdf_text(text):
             continue
 
         # ---- SLOT + FACULTY ----
-        slot_match = SLOT_FACULTY_PATTERN.match(line)
+        # Try new format first (UG - XX, SLOT, DEPT - FACULTY)
+        slot_match = SLOT_FACULTY_PATTERN_NEW.match(line)
+        if slot_match:
+            current_slot = slot_match.group(1)
+            current_faculty = slot_match.group(2)
+            skip_phase = False
+            i += 1
+            continue
+        
+        # Fall back to old format (SLOT, FACULTY)
+        slot_match = SLOT_FACULTY_PATTERN_OLD.match(line)
         if slot_match:
             current_slot = slot_match.group(1)
             current_faculty = slot_match.group(2)
