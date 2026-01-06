@@ -200,6 +200,24 @@ function App() {
               <Linkedin className="w-4 h-4 text-indigo-500 dark:text-indigo-400 group-hover:text-indigo-600 dark:group-hover:text-indigo-300" />
               <span className="text-gray-600 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-gray-200 text-sm font-medium">Dharshan D</span>
             </a>
+            <a
+              href="https://www.linkedin.com/in/nb-sanjay-kumar"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-gray-900/50 hover:bg-gray-50 dark:hover:bg-indigo-900/30 border border-gray-200 dark:border-gray-800 hover:border-indigo-400 dark:hover:border-indigo-500/50 rounded-lg transition-all group shadow-sm dark:shadow-none"
+            >
+              <Linkedin className="w-4 h-4 text-indigo-500 dark:text-indigo-400 group-hover:text-indigo-600 dark:group-hover:text-indigo-300" />
+              <span className="text-gray-600 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-gray-200 text-sm font-medium">NB Sanjay Kumar</span>
+            </a>
+            <a
+              href="https://www.linkedin.com/in/sanjai-l-508a112b2"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-gray-900/50 hover:bg-gray-50 dark:hover:bg-indigo-900/30 border border-gray-200 dark:border-gray-800 hover:border-indigo-400 dark:hover:border-indigo-500/50 rounded-lg transition-all group shadow-sm dark:shadow-none"
+            >
+              <Linkedin className="w-4 h-4 text-indigo-500 dark:text-indigo-400 group-hover:text-indigo-600 dark:group-hover:text-indigo-300" />
+              <span className="text-gray-600 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-gray-200 text-sm font-medium">Sanjai L</span>
+            </a>
           </div>
           <p className="text-gray-600 dark:text-gray-600 text-sm">© 2026 PlanWizz. Intelligent Scheduling.</p>
         </footer>
@@ -312,7 +330,7 @@ function App() {
 
             <div className="mt-4 pt-4 border-t border-gray-800">
               <p className="text-gray-500 text-xs text-center">Developed by</p>
-              <div className="flex justify-center gap-2 mt-2">
+              <div className="flex justify-center gap-2 mt-2 flex-wrap">
                 <a
                   href="https://www.linkedin.com/in/gurumurthys/"
                   target="_blank"
@@ -330,6 +348,24 @@ function App() {
                 >
                   <Linkedin className="w-3 h-3 text-indigo-400" />
                   <span className="text-gray-300">Dharshan D</span>
+                </a>
+                <a
+                  href="https://www.linkedin.com/in/nb-sanjay-kumar"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-1 px-3 py-1 bg-gray-800/50 hover:bg-indigo-900/30 border border-gray-700 hover:border-indigo-500/50 rounded-lg transition-all text-xs"
+                >
+                  <Linkedin className="w-3 h-3 text-indigo-400" />
+                  <span className="text-gray-300">NB Sanjay Kumar</span>
+                </a>
+                <a
+                  href="https://www.linkedin.com/in/sanjai-l-508a112b2"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-1 px-3 py-1 bg-gray-800/50 hover:bg-indigo-900/30 border border-gray-700 hover:border-indigo-500/50 rounded-lg transition-all text-xs"
+                >
+                  <Linkedin className="w-3 h-3 text-indigo-400" />
+                  <span className="text-gray-300">Sanjai L</span>
                 </a>
               </div>
             </div>
@@ -507,6 +543,12 @@ function App() {
               <Linkedin className="w-4 h-4" />
             </a>
             <a href="https://www.linkedin.com/in/dharshan2006" target="_blank" rel="noopener noreferrer" className="text-gray-500 hover:text-indigo-400 transition-colors">
+              <Linkedin className="w-4 h-4" />
+            </a>
+            <a href="https://www.linkedin.com/in/nb-sanjay-kumar" target="_blank" rel="noopener noreferrer" className="text-gray-500 hover:text-indigo-400 transition-colors">
+              <Linkedin className="w-4 h-4" />
+            </a>
+            <a href="https://www.linkedin.com/in/sanjai-l-508a112b2" target="_blank" rel="noopener noreferrer" className="text-gray-500 hover:text-indigo-400 transition-colors">
               <Linkedin className="w-4 h-4" />
             </a>
           </div>
