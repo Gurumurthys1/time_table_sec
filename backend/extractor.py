@@ -124,7 +124,8 @@ def parse_pdf_text(text):
                     })
 
         i += 1
-
+    
+    print(f"[INFO] PDF extraction complete: {len(rows)} course slots found")
     return rows
 
 def merge_slots(rows):
