@@ -150,17 +150,6 @@ function App() {
         ? 'dark bg-black bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-gray-900 via-black to-black text-gray-100'
         : 'bg-gradient-to-br from-blue-50 via-white to-purple-50 text-gray-900'
         }`}>
-        {/* Theme Toggle - Landing Page */}
-        <button
-          onClick={() => setIsDarkMode(!isDarkMode)}
-          className={`absolute top-6 right-6 p-3 rounded-full transition-all z-50 ${isDarkMode
-            ? 'bg-gray-900/50 border border-indigo-500/30 text-indigo-400 hover:bg-indigo-900/30'
-            : 'bg-white/80 border border-purple-300 text-purple-600 hover:bg-purple-50 shadow-lg'
-            }`}
-          title={isDarkMode ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
-        >
-          <Lamp className={`w-5 h-5 transition-transform ${!isDarkMode ? 'rotate-12' : ''}`} />
-        </button>
 
         {/* Ambient Background Glow */}
         <div className={`absolute top-[-10%] left-[-10%] w-[500px] h-[500px] rounded-full blur-[120px] pointer-events-none ${isDarkMode ? 'bg-indigo-900/20' : 'bg-blue-400/10'
