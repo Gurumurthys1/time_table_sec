@@ -180,44 +180,46 @@ function App() {
         </div>
 
         <footer className="mt-20 text-center space-y-4 relative z-10">
-          <div className="flex items-center justify-center gap-6 mb-3">
-            <span className="text-gray-600 dark:text-gray-500 text-sm font-medium">Developed by</span>
-            <a
-              href="https://www.linkedin.com/in/gurumurthys/"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-gray-900/50 hover:bg-gray-50 dark:hover:bg-indigo-900/30 border border-gray-200 dark:border-gray-800 hover:border-indigo-400 dark:hover:border-indigo-500/50 rounded-lg transition-all group shadow-sm dark:shadow-none"
-            >
-              <Linkedin className="w-4 h-4 text-indigo-500 dark:text-indigo-400 group-hover:text-indigo-600 dark:group-hover:text-indigo-300" />
-              <span className="text-gray-600 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-gray-200 text-sm font-medium">Gurumurthy S</span>
-            </a>
-            <a
-              href="https://www.linkedin.com/in/dharshan2006"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-gray-900/50 hover:bg-gray-50 dark:hover:bg-indigo-900/30 border border-gray-200 dark:border-gray-800 hover:border-indigo-400 dark:hover:border-indigo-500/50 rounded-lg transition-all group shadow-sm dark:shadow-none"
-            >
-              <Linkedin className="w-4 h-4 text-indigo-500 dark:text-indigo-400 group-hover:text-indigo-600 dark:group-hover:text-indigo-300" />
-              <span className="text-gray-600 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-gray-200 text-sm font-medium">Dharshan D</span>
-            </a>
-            <a
-              href="https://www.linkedin.com/in/nb-sanjay-kumar"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-gray-900/50 hover:bg-gray-50 dark:hover:bg-indigo-900/30 border border-gray-200 dark:border-gray-800 hover:border-indigo-400 dark:hover:border-indigo-500/50 rounded-lg transition-all group shadow-sm dark:shadow-none"
-            >
-              <Linkedin className="w-4 h-4 text-indigo-500 dark:text-indigo-400 group-hover:text-indigo-600 dark:group-hover:text-indigo-300" />
-              <span className="text-gray-600 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-gray-200 text-sm font-medium">NB Sanjay Kumar</span>
-            </a>
-            <a
-              href="https://www.linkedin.com/in/sanjai-l-508a112b2"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-gray-900/50 hover:bg-gray-50 dark:hover:bg-indigo-900/30 border border-gray-200 dark:border-gray-800 hover:border-indigo-400 dark:hover:border-indigo-500/50 rounded-lg transition-all group shadow-sm dark:shadow-none"
-            >
-              <Linkedin className="w-4 h-4 text-indigo-500 dark:text-indigo-400 group-hover:text-indigo-600 dark:group-hover:text-indigo-300" />
-              <span className="text-gray-600 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-gray-200 text-sm font-medium">Sanjai L</span>
-            </a>
+          <div className="flex flex-col items-center mb-3">
+            <span className="text-gray-600 dark:text-gray-500 text-sm font-medium mb-3">Developed by</span>
+            <div className="grid grid-cols-2 gap-3 max-w-md">
+              <a
+                href="https://www.linkedin.com/in/gurumurthys/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-gray-900/50 hover:bg-gray-50 dark:hover:bg-indigo-900/30 border border-gray-200 dark:border-gray-800 hover:border-indigo-400 dark:hover:border-indigo-500/50 rounded-lg transition-all group shadow-sm dark:shadow-none"
+              >
+                <Linkedin className="w-4 h-4 text-indigo-500 dark:text-indigo-400 group-hover:text-indigo-600 dark:group-hover:text-indigo-300" />
+                <span className="text-gray-600 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-gray-200 text-sm font-medium">Gurumurthy S</span>
+              </a>
+              <a
+                href="https://www.linkedin.com/in/dharshan2006"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-gray-900/50 hover:bg-gray-50 dark:hover:bg-indigo-900/30 border border-gray-200 dark:border-gray-800 hover:border-indigo-400 dark:hover:border-indigo-500/50 rounded-lg transition-all group shadow-sm dark:shadow-none"
+              >
+                <Linkedin className="w-4 h-4 text-indigo-500 dark:text-indigo-400 group-hover:text-indigo-600 dark:group-hover:text-indigo-300" />
+                <span className="text-gray-600 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-gray-200 text-sm font-medium">Dharshan D</span>
+              </a>
+              <a
+                href="https://www.linkedin.com/in/nb-sanjay-kumar"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-gray-900/50 hover:bg-gray-50 dark:hover:bg-indigo-900/30 border border-gray-200 dark:border-gray-800 hover:border-indigo-400 dark:hover:border-indigo-500/50 rounded-lg transition-all group shadow-sm dark:shadow-none"
+              >
+                <Linkedin className="w-4 h-4 text-indigo-500 dark:text-indigo-400 group-hover:text-indigo-600 dark:group-hover:text-indigo-300" />
+                <span className="text-gray-600 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-gray-200 text-sm font-medium">NB Sanjay Kumar</span>
+              </a>
+              <a
+                href="https://www.linkedin.com/in/sanjai-l-508a112b2"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-gray-900/50 hover:bg-gray-50 dark:hover:bg-indigo-900/30 border border-gray-200 dark:border-gray-800 hover:border-indigo-400 dark:hover:border-indigo-500/50 rounded-lg transition-all group shadow-sm dark:shadow-none"
+              >
+                <Linkedin className="w-4 h-4 text-indigo-500 dark:text-indigo-400 group-hover:text-indigo-600 dark:group-hover:text-indigo-300" />
+                <span className="text-gray-600 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-gray-200 text-sm font-medium">Sanjai L</span>
+              </a>
+            </div>
           </div>
           <p className="text-gray-600 dark:text-gray-600 text-sm">© 2026 PlanWizz. Intelligent Scheduling.</p>
         </footer>
@@ -329,8 +331,8 @@ function App() {
             </div>
 
             <div className="mt-4 pt-4 border-t border-gray-800">
-              <p className="text-gray-500 text-xs text-center">Developed by</p>
-              <div className="flex justify-center gap-2 mt-2 flex-wrap">
+              <p className="text-gray-500 text-xs text-center mb-2">Developed by</p>
+              <div className="grid grid-cols-2 gap-2 mt-2">
                 <a
                   href="https://www.linkedin.com/in/gurumurthys/"
                   target="_blank"
