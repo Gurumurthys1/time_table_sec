@@ -10,7 +10,7 @@ COURSE_HEADER = re.compile(r"^(\d{2}[A-Z]{2}\d{3})\s*\[(\d+)\s*Credits\]")
 DOMAIN_PATTERN = re.compile(
     r"(PROFESSIONAL CORE|PROFESSIONAL ELECTIVE|OPEN ELECTIVE|ENGINEERING SCIENCES|HUMANITIES AND SCIENCES)"
 )
-SLOT_FACULTY_PATTERN = re.compile(r"^([A-Z0-9\-]+),\s*(.+)")
+SLOT_FACULTY_PATTERN = re.compile(r"^UG\s*-\s*\d+,\s*([A-Z0-9\-]+),\s*[A-Z]+\s*-\s*(.+)")
 DAY_PATTERN = re.compile(r"^(Monday|Tuesday|Wednesday|Thursday|Friday|Saturday):")
 TIME_PAIR_PATTERN = re.compile(r"(\d{2}:\d{2})\s*-\s*(\d{2}:\d{2})")
 
